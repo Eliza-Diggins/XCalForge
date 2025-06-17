@@ -172,6 +172,6 @@ We use a multilayer perceptron (MLP) to learn the mapping from $(\theta, T_{\tex
 
 - **Input**: concatenated vector $(\theta, T_{\text{true}}) \in \mathbb{R}^{d+1}$
 - **Hidden Layers**: 2–3 fully connected layers (e.g., 64–128 units each) with ReLU or GELU activations
-- **Output**: scalar prediction of $T_1'$
+- **Output**: scalar prediction of the best-fit $\theta^\star$.
 - **Loss Function**: Mean Squared Error (MSE)
 

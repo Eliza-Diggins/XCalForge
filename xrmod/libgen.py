@@ -5,8 +5,8 @@ define and configure the behavior of the library during its generation.
 """
 from typing import Union, Dict, Sequence, Tuple
 from pathlib import Path
-import os
 import xspec
+import os
 import numpy as np
 from mpi4py import MPI
 import h5py
@@ -14,31 +14,63 @@ from abc import ABC, abstractmethod
 
 class LibProtocol(ABC):
     __lib_params__ = []
-    """ Valid parameters for the library protocol. These should be
-    filled by the user when building the subclass for their workflow.
+    """ 
+    List of valid parameter names expected in the parameter grid. 
 
-    ``__lib_params__`` is a list of strings each of which may be specified as
-    a modification parameter in the ``__init__`` kwargs. These should be the
-    parameters of the modification map.
+    Subclasses must override this with a list of strings corresponding to the 
+    parameter names used for generating the modification space.
 
-    Example: For a gaussian shift in the ARF, you might take mu, sigma, A as
-    the params.
+    Each string in the list will be used as a key in the ``parameters`` dictionary 
+    during initialization. These define the dimensionality and bounds of the 
+    modification lattice.
+
+    Example:
+        __lib_params__ = ["mu", "sigma", "A"]
     """
-    
+
+    # --------------------------------- #
+    # Initialization                    #
+    # --------------------------------- #
+    # This part of the code should usually never change!
     def __init__(self, lib_dir: Union[str,Path], parameters: Dict[str,Sequence], **kwargs):
         """
-        Construct the LibProtocol object in order to get all the settings configured for
-        proceeding.
+        Initialize a LibProtocol instance for generating a synthetic fitting library.
+
+        This sets up the working directory structure, validates the parameter grid 
+        against the protocol's defined parameter list, and prepares MPI coordination.
+        Subclasses may inject additional initialization behavior via `__post_init__`.
 
         Parameters
         ----------
+        lib_dir : str or Path
+            Path to the root directory where the library will be generated. This directory 
+            will contain subdirectories for output, logs, synthetic data, configuration files, 
+            binaries, and stable references.
+        
+        parameters : dict[str, Sequence]
+            Dictionary defining the parameter grid. Each key must match an entry in 
+            `__lib_params__`, and each value must be a sequence of discrete values to 
+            span for that parameter. Together, these define the full modification lattice 
+            for library generation.
+        
+        **kwargs : dict
+            Additional keyword arguments forwarded to subclass-specific post-initialization 
+            logic via `__post_init__`.
 
-        lib_dir: str
-            The directory where the library is going to be generated.
-        parameters: dict
-            The parameter values to use for building the grid of the parameter space.
-        **kwargs:
-            Additional kwargs which can be used for subclassing.
+        Raises
+        ------
+        NotImplementedError
+            If `__lib_params__` is not defined in the subclass.
+        ValueError
+            If an entry in the `parameters` dictionary does not match an expected key in 
+            `__lib_params__`.
+
+        Notes
+        -----
+        - Only rank 0 is responsible for creating the directory structure; other ranks 
+          will wait on MPI synchronization.
+        - Parameter values are internally coerced to lists and stored as `self.__params__`.
+        - The MPI communicator is always `MPI.COMM_WORLD`.
         """
         # @@ Parse Library Directory @@ #
         # This step in the __init__ procedure ensures that the library directory
@@ -76,6 +108,10 @@ class LibProtocol(ABC):
         # Parse the relevant parameters and ensure that they are valid
         # parameters for this parameterization.
         self.__params__ = {}
+
+        if not self.__lib_params__:
+            raise NotImplementedError("Subclasses must define '__lib_params__' to specify required parameter names.")
+
         for paramkey,paramval in parameters.items():
 
             # Check that the parameter key is a legitimate
@@ -93,29 +129,71 @@ class LibProtocol(ABC):
         # Pass off to the post initializer #
         self.__post_init__(**kwargs)
 
-
     # --------------------------------- #
     # Properties.                       #
     # --------------------------------- #
     @property
     def size(self) -> int:
-        return int(np.prod([len(pv) for pk,pv in self.__params__.items()]))
+        """
+        Total number of parameter combinations in the grid.
+
+        Returns
+        -------
+        int
+            The product of the lengths of all parameter value lists, representing the 
+            total number of points in the parameter lattice to be explored.
+        """
+        return int(np.prod([len(pv) for pk, pv in self.__params__.items()]))
 
     @property
     def shape(self) -> tuple:
-        return tuple(len(pv) for _,pv in self.__params__.items())
+        """
+        Shape of the parameter grid as a tuple of dimension sizes.
+
+        Returns
+        -------
+        tuple of int
+            A tuple whose length equals the number of parameters, with each entry 
+            representing the number of values for that parameter. Matches the shape 
+            used to index the N-dimensional parameter space.
+        """
+        return tuple(len(pv) for _, pv in self.__params__.items())
     
     @property
     def comm(self):
+        """
+        MPI communicator for the current protocol.
+
+        Returns
+        -------
+        mpi4py.MPI.Comm
+            The communicator used for rank and size queries, defaulting to MPI.COMM_WORLD.
+        """
         return self.__comm__
     
     @property
     def mpi_rank(self) -> int:
+        """
+        Rank of the current MPI process.
+
+        Returns
+        -------
+        int
+            The rank ID (0-indexed) of the current process in the communicator.
+        """
         return self.__comm__.Get_rank()
 
     @property
     def mpi_size(self) -> int:
-            return self.__comm__.Get_size()
+        """
+        Total number of MPI processes participating in the communicator.
+
+        Returns
+        -------
+        int
+            The total number of ranks (MPI processes) active in the communicator.
+        """
+        return self.__comm__.Get_size()
 
     # --------------------------------- #
     # Abstract Sockets                  #
@@ -126,103 +204,173 @@ class LibProtocol(ABC):
     # the relevant library.
     def __post_init__(self,**kwargs):
         """
-        The ``__post_init__`` method may be written to add further initialization
-        behavior to subclasses. By default, it does nothing.
+        Hook method for performing additional setup in subclasses after base initialization.
+
+        This method is called automatically at the end of the base class `__init__` method.
+        Subclasses can override it to perform setup specific to the particular modification 
+        protocol (e.g., setting up XSPEC models, loading additional data, etc.).
+
+        Parameters
+        ----------
+        **kwargs : dict
+            Optional keyword arguments passed from the main constructor, which may be used 
+            for customization in derived classes.
+
+        Notes
+        -----
+        The default implementation sets up default XSPEC environment options, such as:
+        - Suppressing plotting windows (`Plot.device = "/null"`)
+        - Setting abundance and cross-section tables
+        - Choosing fitting statistic and method
+        - Reducing XSPEC chatter
+
+        These defaults can be extended or overridden in subclasses.
         """
-        pass
+        # Use null plotting device to suppress any GUI popups
+        xspec.Plot.device = "/null"
+
+        # Set default abundances and cross sections
+        xspec.Xset.abund = "wilm"
+        xspec.Xset.xsect = "vern"
+
+        # Set XSPEC fit method and parameters
+        xspec.Fit.statMethod = "cstat"
+        xspec.Fit.method = "leven"
+
+        # Suppress XSPEC chatter (set to 10 for minimal, 0 for silent)
+        xspec.Xset.chatter = 10
 
     @abstractmethod
     def generate_unmodified_configuration(self, id: int, **parameters) -> dict:
         """
-        This method should be used to produce the unmodified configuration
-        for the simulation.
+        Generate the configuration dictionary for the unmodified system.
+
+        This configuration should define file paths and simulation parameters required
+        for generating or loading the standard model, including ARF, RMF, exposure, etc.
+
+        Parameters
+        ----------
+        id : int
+            Global index in the parameter space (flattened).
+        **parameters : dict
+            Dictionary of parameter values at this grid point.
 
         Returns
         -------
         dict
-            The configuration dictionary. It may return any of the
-            following:
-
-            - ``response`` (required): The RMF file to use for the
-              simulated data.
-            - ``arf`` (required): The ARF file used to simulate the data.
-            - ``background`` (optional): The background.
-            - ``exposure`` (required): The exposure time.
-            - ``correction`` (optional): Optional correction norm factor.
-            - ``backExposure`` (optional): Optional background exposure time modifier.
-
-              For exposure and correction, if left empty fakeit will use the values from the
-              original spectrum, or 1.0 if not based on an original spectrum. Each of these may be entered as a string or float.
-        
-        Notes
-        -----
-
-        We HIGHLY suggest that ``response`` and ``arf`` be EITHER a fixed ``.rmf`` and ``.arf`` stored
-        in the ``./stable`` directory of the library or that they be generated based on the ``parameters``, in which case
-        they should be placed in the ``./bin`` and named ``unmod_arf_{id}.arf``.
+            Configuration dictionary containing file references and simulation settings.
         """
+        ...
 
     @abstractmethod
     def generate_modified_configuration(self,id: int, **parameters) -> dict:
         """
-        This method should be used to produce the modified configuration
-        for the simulation.
+        Generate the configuration dictionary for the modified system.
+
+        This configuration typically corresponds to a perturbed version of the unmodified
+        configuration—e.g., with a distorted ARF or a changed response matrix.
+
+        Parameters
+        ----------
+        id : int
+            Global index in the parameter space (flattened).
+        **parameters : dict
+            Dictionary of parameter values at this grid point.
 
         Returns
         -------
         dict
-            The configuration dictionary. It may return any of the
-            following:
-
-            - ``response`` (required): The RMF file to use for the
-              simulated data.
-            - ``arf`` (required): The ARF file used to simulate the data.
-            - ``background`` (optional): The background.
-            - ``exposure`` (required): The exposure time.
-            - ``correction`` (optional): Optional correction norm factor.
-            - ``backExposure`` (optional): Optional background exposure time modifier.
-
-              For exposure and correction, if left empty fakeit will use the values from the
-              original spectrum, or 1.0 if not based on an original spectrum. Each of these may be entered as a string or float.
-        
-        Notes
-        -----
-
-        We HIGHLY suggest that ``response`` and ``arf`` be EITHER a fixed ``.rmf`` and ``.arf`` stored
-        in the ``./stable`` directory of the library or that they be generated based on the ``parameters``, in which case
-        they should be placed in the ``./bin`` and named ``unmod_arf_{id}.arf``.
+            Configuration dictionary for the modified system.
         """
-
+        ...
+    
     @abstractmethod
     def generate_model_unmodified(self, T, **parameters):
         """
-        This method is called to create the relevant XSPEC mode
-        when fitting to the UNMODIFIED configuration with the synthetic data.
+        Build and return the XSPEC model for the unmodified configuration.
 
-        By default, this is also used in ``generate_model_modified`` which results
-        in identical models being used (with potentially different configurations);
-        however, these may be modified to parameterized modifications which change the
-        presumed model instead of the configuration.
+        This should construct the physical model (e.g., `tbabs*apec`) corresponding to the
+        unmodified simulation configuration for a given temperature.
+
+        Parameters
+        ----------
+        T : float
+            Temperature (or other synthetic variable) used to build the model.
+        **parameters : dict
+            Dictionary of parameter values at this grid point.
+
+        Returns
+        -------
+        xspec.Model
+            The unmodified XSPEC model instance.
         """
-        pass
+        ...
 
     @abstractmethod
     def generate_model_modified(self, T, **parameters):
         """
-        This method is called to create the relevant XSPEC mode
-        when fitting to the MODIFIED configuration with the synthetic data.
+        Build and return the XSPEC model for the modified configuration.
 
-        It is also the model used to generate the spectrum for the synethetic data.
+        This typically reflects a perturbed version of the base model—e.g., using a
+        modified response or artificial distortion in the instrument model.
+
+        Parameters
+        ----------
+        T : float
+            Temperature (or other synthetic variable) used to build the model.
+        **parameters : dict
+            Dictionary of parameter values at this grid point.
+
+        Returns
+        -------
+        xspec.Model
+            The modified XSPEC model instance.
         """
-        return self.generate_model_unmodified(T, **parameters)
-    
+        ...
+
     @abstractmethod
     def fit_unmodified(self, config, **parameters):
-        pass
+        """
+        Perform fitting on the synthetic data using the unmodified configuration.
+
+        This function should load the synthetic dataset (created by the modified model),
+        apply the unmodified model, and extract the best-fit parameters or relevant statistics.
+
+        Parameters
+        ----------
+        config : dict
+            Unmodified configuration dictionary.
+        **parameters : dict
+            Dictionary of parameter values at this grid point.
+
+        Returns
+        -------
+        float or array-like
+            Result of the fit (e.g., recovered temperature or fit statistic).
+        """
+        ...
 
     @abstractmethod
     def fit_modified(self, config, **parameters):
-        pass
+        """
+        Perform fitting on the synthetic data using the modified configuration.
+
+        This may be used as a diagnostic to see if the modified model can recover
+        input parameters from its own simulated data.
+
+        Parameters
+        ----------
+        config : dict
+            Modified configuration dictionary.
+        **parameters : dict
+            Dictionary of parameter values at this grid point.
+
+        Returns
+        -------
+        float or array-like
+            Result of the fit (e.g., recovered temperature or fit statistic).
+        """
+        ...
 
     # ---------------------------------- #
     # Tools                              #
@@ -231,20 +379,20 @@ class LibProtocol(ABC):
     # They generally don't need modification.
     def distribute_parameters(self) -> Tuple[int, int]:
         """
-        Determine the contiguous linear index range assigned to this MPI rank
-        for the flattened parameter grid.
+        Compute the range of flattened parameter indices assigned to this MPI rank.
 
-        The full parameter grid (with shape [N1, N2, ..., Nk]) has total size `self.size`.
-        This space is partitioned as evenly as possible across MPI processes:
-        - The first `r = self.size % mpi_size` ranks get `q + 1` elements,
-        - The remaining `mpi_size - r` ranks get `q` elements.
+        The full parameter space (a grid with shape defined by `self.shape`) is flattened
+        and divided as evenly as possible across all MPI ranks. Each rank receives a
+        contiguous block of indices to process:
+        - The first `r = size % mpi_size` ranks receive `q + 1` items.
+        - The remaining `mpi_size - r` ranks receive `q` items.
 
         Returns
         -------
         start : int
-            Inclusive starting index in the flattened parameter space for this rank.
+            Inclusive start index in the global flattened parameter grid for this rank.
         stop : int
-            Exclusive ending index in the flattened parameter space for this rank.
+            Exclusive stop index in the global flattened parameter grid for this rank.
         """
         # Compute base chunk size and remainder
         q, r = divmod(self.size, self.mpi_size)
@@ -257,28 +405,28 @@ class LibProtocol(ABC):
         stops = np.cumsum(chunk_sizes)
 
         return starts[self.mpi_rank], stops[self.mpi_rank]
+    
     def create_rank_output_file(self,start:int, stop:int, temperatures: Sequence[float]) -> h5py.File:
         """
-        Creates an HDF5 output file for this MPI rank in the output directory,
-        with a dataset for storing the results of synthetic fits.
+        Create an HDF5 output file for this MPI rank to store fitting results.
 
-        The output file will be created as:
-            <lib_dir>/out/libgen_rank_<rank>.h5
-
-        The dataset inside will be named 'results' and shaped as:
-            (N_local, len(temperatures))
-
-        where N_local is the number of parameter grid points assigned to this rank.
+        The file is saved in the output directory under the name:
+        `libgen_rank_<rank>.h5`, and contains a dataset named 'results' with
+        shape `(stop - start, len(temperatures))`.
 
         Parameters
         ----------
+        start : int
+            Start index (inclusive) of the parameter grid assigned to this rank.
+        stop : int
+            Stop index (exclusive) of the parameter grid assigned to this rank.
         temperatures : Sequence[float]
-            The list of input temperatures used in the synthetic simulations.
+            List of temperature values used in the simulation.
 
         Returns
         -------
         h5py.File
-            The open HDF5 file handle (in append mode) for writing results.
+            Open file handle for writing synthetic fit results.
         """
         rank = self.mpi_rank
         T_count = len(temperatures)
@@ -304,35 +452,39 @@ class LibProtocol(ABC):
         f.attrs["parameter_count"] = stop-start
 
         return f
+    
     def build_synthetic_data(self,idx :int, tidx: int, T, config, **parameters):
         """
-        Generate synthetic photon data using the modified model generator and the modified configuration.
+        Generate synthetic photon data for a given parameter combination and temperature.
+
+        This method uses the modified configuration and model to simulate a synthetic
+        observation via XSPEC's `fakeit` functionality. It saves the generated spectrum
+        to a `.pha` file and returns the loaded data.
 
         Parameters
         ----------
-        temperature : float
-            Temperature value passed to the model generator.
-        
-        config: dict
-            The configuration settings.
-        
+        idx : int
+            Global index of the parameter grid point.
+        tidx : int
+            Index of the temperature within the current temperature list.
+        T : float
+            Temperature used to construct the synthetic model.
+        config : dict
+            Simulation configuration (e.g., response, arf, exposure).
+        **parameters : dict
+            Parameter values at this grid point.
+
         Returns
         -------
-        datasets : list of xspec.Spectrum
-            List of synthetic spectra generated from the fakeit run(s).
-            
+        xspec.Spectrum
+            The synthetic XSPEC spectrum loaded into memory.
+
         Notes
         -----
-        What this does (in order) is
-        
-        1. Clear any existing models and build a new one. This ensures clarity and
-        may be relaxed later if we deem in interferes with efficiency.
-        2. We then clear all of our data (photon lists / observations) from memory and create
-        a fake data file. This is then loaded into XSPEC as AllData(1).
-        3. We then return this data object.
-        
-        This will CLEAR ANY EXISTING XSPEC MODELS AND DATA
+        This function clears all existing XSPEC models and data, both before
+        and after generating the synthetic dataset.
         """
+
         # Clear all existing XSPEC states
         xspec.AllModels.clear()
         xspec.AllData.clear()
@@ -357,6 +509,53 @@ class LibProtocol(ABC):
 
         # Return the generated synthetic datasets
         return xspec.AllData(1)
+    
+    def combine_output_files(self, temperature_count: int):
+        """
+        Combine all per-rank HDF5 output files into a single unified HDF5 file.
+
+        This method is typically called by rank 0 after all ranks finish processing.
+        It aggregates the 'results' datasets from each file into one file named
+        `libgen_combined.h5` and optionally removes the individual rank-specific files.
+
+        Parameters
+        ----------
+        temperature_count : int
+            Number of temperature values used (i.e., number of columns in the result arrays).
+
+        Raises
+        ------
+        FileNotFoundError
+            If any expected rank-specific output file is missing.
+        """
+        combined_path = self.__outdir__ / "libgen_combined.h5"
+        with h5py.File(combined_path, "w") as fout:
+
+            # Preallocate full result array
+            full_shape = (self.size, temperature_count)
+            dset = fout.create_dataset(
+                "results",
+                shape=full_shape,
+                dtype="f8",
+                compression="gzip"
+            )
+
+            for rank in range(self.mpi_size):
+                fname = self.__outdir__ / f"libgen_rank_{rank}.h5"
+                if not fname.exists():
+                    raise FileNotFoundError(f"Missing output file from rank {rank}: {fname}")
+
+                with h5py.File(fname, "r") as fr:
+                    start = fr.attrs["start_index"]
+                    stop = fr.attrs["stop_index"]
+                    dset[start:stop, :] = fr["results"][...]
+
+                # Optional: remove per-rank file to clean up
+                os.remove(fname)
+
+            fout.attrs["parameters"] = str(self.__lib_params__)
+            fout.attrs["parameter_shape"] = str(self.shape)
+            fout.attrs["temperature_count"] = temperature_count
 
     # ---------------------------------- #
     # Runner                             #
@@ -430,3 +629,110 @@ class LibProtocol(ABC):
                 output_dataset[lidx, tid] = unmod_result  # or mod_result, depending on target
 
         data_file.close()
+
+
+# ================================== #
+# SPECIFIC LIBGEN PROTOCOLS          #
+# ================================== #
+class GaussianARFProtocol(LibProtocol):
+    """
+    Characteristic protocol to modify ARFs vis-a-vis a 
+    gaussian modification to the ARF.
+    """
+    __lib_params__ = ["mu", "sigma", "A"]
+
+    def __post_init__(self, **kwargs):
+        super().__post_init__(**kwargs)
+
+        # Load a stable ARF and energy grid template
+        self.__stable_arf__ = kwargs.get("base_arf","base_arf.arf")
+        self._stable_arf_path = self.__stable_dir__ / self.__stable_arf__
+
+        if not self._stable_arf_path.exists():
+            raise FileNotFoundError(f"Stable ARF file `{self.__stable_arf__}` not found in ./stable/ directory.")
+
+        # Load ARF grid once (for efficiency)
+        self.__base_arf_table__ = self._load_arf(self._stable_arf_path)
+
+
+    def _load_arf(self, path):
+        """
+        Load an arf from a path and extract the energy bins and the
+        effective areas.
+        """
+        from astropy.table import Table
+
+        # load the table
+        arf_table = Table.read(path)
+
+        # The ARF MUST have ENERG_LO, ENERG_HI, and SPECRESP.
+        return arf_table
+
+    def apply_gaussian_modification(self, mu, sigma, A):
+        """
+        Returns a modified effective area array with Gaussian bump.
+        """
+        # Create the copied table
+        _new_table = self.__base_arf_table__.copy()
+
+
+        gaussian = lambda x: A * np.exp(-((x-mu)/sigma)**2)
+
+        bin_centers = 0.5*(_new_table['ENERG_LO'] + _new_table['ENERG_HI'])
+
+        _new_table['SPECRESP'] *= (1+gaussian(bin_centers))
+
+        return _new_table
+
+    def generate_unmodified_configuration(self, id, **parameters):
+        return {
+            "response": str(self.__stable_dir__ / "base.rmf"),
+            "arf": str(self._stable_arf_path),
+            "exposure": 50000
+        }
+
+    def generate_modified_configuration(self, id, **parameters):
+        mod_arf_path = self.__bindir__ / f"mod_arf_{id}.arf"
+
+        if not mod_arf_path.exists():
+            # Compute modified effective area
+            mu = parameters["mu"]
+            sigma = parameters["sigma"]
+            A = parameters["A"]
+            new_table = self.apply_gaussian_modification(mu, sigma, A)
+            new_table.write(mod_arf_path,format='fits')
+
+        return {
+            "response": str(self.__stable_dir__ / "base.rmf"),
+            "arf": str(mod_arf_path),
+            "exposure": 50000
+        }
+
+    def generate_model_unmodified(self, T, **parameters):
+        m = xspec.Model("tbabs*apec")
+        m(1).values = 0.1   # nH
+        m(2).values = T     # kT
+        m(3).values = 0.3   # abundance
+        m(4).values = 0.05  # redshift
+        m(5).values = 1.0   # norm
+        return m
+
+    def generate_model_modified(self, T, **parameters):
+        return self.generate_model_unmodified(T, **parameters)
+
+    def fit_unmodified(self, config, **parameters):
+        # Update response/arf for spectrum
+        xspec.AllData(1).response = config["response"]
+        xspec.AllData(1).arf = config["arf"]
+        xspec.AllModels.setPars({2: "1.0"})  # Reset T
+        xspec.Fit.perform()
+        return float(xspec.AllModels(1)(2).values[0])
+
+    def fit_modified(self, config, **parameters):
+        xspec.AllData(1).response = config["response"]
+        xspec.AllData(1).arf = config["arf"]
+        xspec.AllModels.setPars({2: "1.0"})
+        xspec.Fit.perform()
+        return float(xspec.AllModels(1)(2).values[0])
+
+

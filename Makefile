@@ -49,7 +49,7 @@
 
 install-chpc:
 	@echo "Running CHPC install script..."
-	@chmod +x bootstrap/*.sh
+	@chmod +x bootstrap/install_chpc.sh
 	@bash bootstrap/install_chpc.sh
 
 # ----------------------------

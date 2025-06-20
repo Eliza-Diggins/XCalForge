@@ -1,6 +1,0 @@
-library.base.ModificationLibrary.temperatures
-=============================================
-
-.. currentmodule:: library.base
-
-.. autoproperty:: ModificationLibrary.temperatures

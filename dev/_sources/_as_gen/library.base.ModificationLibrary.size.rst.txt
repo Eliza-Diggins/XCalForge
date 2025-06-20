@@ -1,6 +1,0 @@
-library.base.ModificationLibrary.size
-=====================================
-
-.. currentmodule:: library.base
-
-.. autoproperty:: ModificationLibrary.size

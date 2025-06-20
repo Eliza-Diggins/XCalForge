@@ -11,11 +11,9 @@ XCalForge
 | **PyPi**          |                                                          |
 +-------------------+----------------------------------------------------------+
 
-Overview
---------
 
 **XCalForge** is a research-oriented framework for analyzing and correcting calibration discrepancies
- between X-ray telescopes through simulation-driven modeling and machine learning.
+between X-ray telescopes through simulation-driven modeling and machine learning.
 
 It allows users to:
 

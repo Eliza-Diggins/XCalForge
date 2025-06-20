@@ -1,6 +1,0 @@
-library.base.ModificationLibrary.config
-=======================================
-
-.. currentmodule:: library.base
-
-.. autoproperty:: ModificationLibrary.config

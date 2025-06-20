@@ -1,0 +1,1343 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>library.base &#8212; XCalForge  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/library/base';</script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">XCalForge  documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../reference/index.html">
+    XCalForge Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../reference/index.html">
+    XCalForge Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">library.base</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for library.base</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Library generation base classes.</span>
+
+<span class="sd">These are the base classes for generating the modification libraries</span>
+<span class="sd">which are then used to train the interpolators.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">ABC</span><span class="p">,</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">contextlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">contextmanager</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">h5py</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">xforge.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigManager</span><span class="p">,</span> <span class="n">get_mpi</span><span class="p">,</span> <span class="n">get_xspec</span>
+
+<span class="c1"># Ensure access to XSPEC via PyXSPEC. This needs</span>
+<span class="c1"># to be done carefully because there can only be one CLI active</span>
+<span class="c1"># per process.</span>
+<span class="n">xspec</span> <span class="o">=</span> <span class="n">get_xspec</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="ModificationLibrary">
+<a class="viewcode-back" href="../../_as_gen/library.base.ModificationLibrary.html#library.arf_mod.ModificationLibrary">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">ModificationLibrary</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Base class for loading and interacting with a pre-generated synthetic fitting library.</span>
+
+<span class="sd">    This class provides common logic for loading configuration, parameter space, and output</span>
+<span class="sd">    data from a specified directory. It assumes the library has already been generated and</span>
+<span class="sd">    contains a configuration file, parameter definitions, and combined results.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># ================================ #</span>
+    <span class="c1"># CLASS FLAGS                      #</span>
+    <span class="c1"># ================================ #</span>
+    <span class="c1"># The class flags are simple markers that are used</span>
+    <span class="c1"># for various behaviors in the code below. These may need to</span>
+    <span class="c1"># be modified in subclasses. Please read the relevant documentation</span>
+    <span class="c1"># in order to determine if a particular flag needs to be modified.</span>
+    <span class="n">__PARAMETERS__</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    The ALLOWED set of parameter names (each element) for this</span>
+<span class="sd">    modification library class. If parameters are detected which do not</span>
+<span class="sd">    exist in __PARAMETERS__, then an error is raised.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">__CONFIG__</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;logging.level&quot;</span><span class="p">:</span> <span class="s2">&quot;INFO&quot;</span><span class="p">}</span>
+
+    <span class="c1"># ========================== #</span>
+    <span class="c1"># Initialization             #</span>
+    <span class="c1"># ========================== #</span>
+    <span class="c1"># These methods are all concerned with loading libraries from</span>
+    <span class="c1"># disk. They can be modified in subclasses, but should be kept</span>
+    <span class="c1"># relatively consistent.</span>
+<div class="viewcode-block" id="ModificationLibrary.__init__">
+<a class="viewcode-back" href="../../_as_gen/library.base.ModificationLibrary.__init__.html#library.arf_mod.ModificationLibrary.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">directory</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialize a `ModificationLibrary` from an existing library directory.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        directory : str or Path</span>
+<span class="sd">            Path to the root library directory containing the required structure.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        ValueError</span>
+<span class="sd">            If the directory does not exist.</span>
+<span class="sd">        FileNotFoundError</span>
+<span class="sd">            If critical components (like config.yaml or library.h5) are missing.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Configure the libraries directory and ensure that</span>
+        <span class="c1"># the path exists before proceeding.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__directory__</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__directory__</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;The directory `</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__directory__</span><span class="si">}</span><span class="s2">` does not exist.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># Construct the ``__assets__`` dictionary to act as a container</span>
+        <span class="c1"># around various different file assests for quick access and</span>
+        <span class="c1"># iteration control.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__assets__</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="c1"># Validate that the file structure is sufficient.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__validate_structures__</span><span class="p">()</span>
+
+        <span class="c1"># Load the configuration file.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__init_config__</span><span class="p">()</span>
+
+        <span class="c1"># Setup the logger.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__init_logger__</span><span class="p">()</span>
+
+        <span class="c1"># Initialize the parameters.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__init_parameters__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__post_init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Loading Library @ </span><span class="si">%s</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__directory__</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__validate_structures__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Validates the required file and directory structure for the modification library.</span>
+
+<span class="sd">        Ensures that critical components are present in the library directory, including:</span>
+<span class="sd">        - Cache directory for temporary generation data.</span>
+<span class="sd">        - Bin directory for persistent generated files (e.g., ARFs).</span>
+<span class="sd">        - Combined output HDF5 file (must exist).</span>
+<span class="sd">        - Configuration YAML file (must exist).</span>
+
+<span class="sd">        These paths are stored in `self.__assets__` for downstream use.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        FileNotFoundError</span>
+<span class="sd">            If any required file or directory is missing (aside from cache/bin which will be created).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cachedir__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__directory__</span> <span class="o">/</span> <span class="s2">&quot;cache&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__bindir__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__directory__</span> <span class="o">/</span> <span class="s2">&quot;bin&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__logdir__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__directory__</span> <span class="o">/</span> <span class="s2">&quot;logs&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__configpath__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__directory__</span> <span class="o">/</span> <span class="s2">&quot;config.yaml&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__datapath__</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__directory__</span> <span class="o">/</span> <span class="s2">&quot;library.h5&quot;</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__configpath__</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Missing required config file: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__configpath__</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">__datapath__</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Missing required data file: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__datapath__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__cachedir__</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__bindir__</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__logdir__</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__assets__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;cache&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cachedir__</span><span class="p">,</span>
+                <span class="s2">&quot;bin&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__bindir__</span><span class="p">,</span>
+                <span class="s2">&quot;log&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__logdir__</span><span class="p">,</span>
+                <span class="s2">&quot;config&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__configpath__</span><span class="p">,</span>
+                <span class="s2">&quot;data&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">__datapath__</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__init_config__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads the configuration file using the `ConfigManager` class.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">xforge.utils</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>  <span class="c1"># Local import to avoid cyclic dependency</span>
+            <span class="n">ConfigManager</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">__config__</span> <span class="o">=</span> <span class="n">ConfigManager</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__configpath__</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__init_logger__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initializes the internal logger for the library.</span>
+<span class="sd">        Sets up both per-rank log files and (optionally) console output for rank 0.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Obtain the name of the logger and load in</span>
+        <span class="c1"># MPI to check what configuration system we&#39;re going</span>
+        <span class="c1"># to be using.</span>
+        <span class="n">comm</span> <span class="o">=</span> <span class="n">get_mpi</span><span class="p">()</span>
+        <span class="n">rank</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
+
+        <span class="n">logger_name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Library.</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__directory__</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span>
+
+        <span class="c1"># Configure for parallelism</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="n">logger_name</span> <span class="o">+</span> <span class="sa">f</span><span class="s2">&quot;.</span><span class="si">{</span><span class="n">rank</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;logging.level&quot;</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">))</span>
+
+        <span class="c1"># Avoid adding multiple handlers if already initialized</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">hasHandlers</span><span class="p">():</span>
+            <span class="k">return</span>
+
+        <span class="c1"># construct the formatter.</span>
+        <span class="n">fmt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+            <span class="s2">&quot;logging.fmt&quot;</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">%(asctime)s</span><span class="s2"> - </span><span class="si">%(levelname)s</span><span class="s2"> - </span><span class="si">%(message)s</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+        <span class="n">formatter</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">Formatter</span><span class="p">(</span><span class="n">fmt</span><span class="p">)</span>
+
+        <span class="c1"># Create the output log file.</span>
+        <span class="n">logfile</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__directory__</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;logs/rank_</span><span class="si">{</span><span class="n">rank</span><span class="si">}</span><span class="s2">.log&quot;</span>
+        <span class="n">filehandler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">FileHandler</span><span class="p">(</span><span class="n">logfile</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">)</span>
+        <span class="n">filehandler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;logging.level&quot;</span><span class="p">,</span> <span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">))</span>
+        <span class="n">filehandler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">filehandler</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">console_handler</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">StreamHandler</span><span class="p">()</span>
+            <span class="n">console_handler</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">)</span>
+            <span class="n">console_handler</span><span class="o">.</span><span class="n">setFormatter</span><span class="p">(</span><span class="n">formatter</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">addHandler</span><span class="p">(</span><span class="n">console_handler</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__init_parameters__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Loads the parameter arrays from the &#39;PARAMS&#39; group in the HDF5 data file.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        KeyError</span>
+<span class="sd">            If the &#39;PARAMS&#39; group is not found.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Load the HDF5 file with the data. This is where we store the</span>
+        <span class="c1"># parameter arrays as well.</span>
+
+        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__datapath__</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="c1"># Check that we have a PARAMS group in the</span>
+            <span class="c1"># HDF5.</span>
+            <span class="k">if</span> <span class="s2">&quot;PARAMS&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;&#39;PARAMS&#39; group not found in </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">__datapath__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="n">param_group</span><span class="p">:</span> <span class="n">h5py</span><span class="o">.</span><span class="n">Group</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s2">&quot;PARAMS&quot;</span><span class="p">]</span>
+
+            <span class="c1"># Iterate through the keys and select only the</span>
+            <span class="c1"># permissible parameters. Then ensure that all parameters</span>
+            <span class="c1"># are present.</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__parameters__</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">param_group</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="c1"># If the key is unknown, we raise a warning</span>
+                <span class="c1"># and then skip along.</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="n">__PARAMETERS__</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span>
+                        <span class="s2">&quot;Found key </span><span class="si">%s</span><span class="s2"> in `PARAMS`, which is not in __PARAMETERS__.&quot;</span><span class="p">,</span> <span class="n">key</span>
+                    <span class="p">)</span>
+                    <span class="k">continue</span>
+
+                <span class="c1"># If they key is known, they we extract the</span>
+                <span class="c1"># data and set it.</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__parameters__</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">param_group</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="o">...</span><span class="p">]</span>
+
+        <span class="c1"># Finally, ensure that all of the necessary parameters</span>
+        <span class="c1"># are specified. If they are not, we raise an error.</span>
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__parameters__</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__PARAMETERS__</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Missing parameters!&quot;</span><span class="p">)</span>
+
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__post_init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
+    <span class="c1"># ============================ #</span>
+    <span class="c1"># Building Libraries.          #</span>
+    <span class="c1"># ============================ #</span>
+    <span class="c1"># These methods focus on ensuring that new libraries</span>
+    <span class="c1"># can be created smoothly. These do not actually run the</span>
+    <span class="c1"># library generation process.</span>
+<div class="viewcode-block" id="ModificationLibrary.create_library">
+<a class="viewcode-back" href="../../_as_gen/library.base.ModificationLibrary.create_library.html#library.arf_mod.ModificationLibrary.create_library">[docs]</a>
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_library</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span>
+        <span class="n">directory</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span>
+        <span class="n">parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">],</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span>
+        <span class="n">overwrite</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a new library directory with required structure and parameter file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        directory : str or Path</span>
+<span class="sd">            Path to the root of the new library. If the directory already exists,</span>
+<span class="sd">            the behavior is dictated by the `overwrite` parameter.</span>
+<span class="sd">        parameters : dict[str, Sequence]</span>
+<span class="sd">            Parameter grid as a dictionary of 1D arrays/lists for each axis. These must</span>
+<span class="sd">            match the class&#39;s allowed parameters.</span>
+<span class="sd">        overwrite : bool</span>
+<span class="sd">            Whether to overwrite an existing directory. If False and directory exists, an error is raised.</span>
+<span class="sd">        config : dict, optional</span>
+<span class="sd">            Optional configuration dictionary to write to `config.yaml`. If None, a default is used.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ModificationLibrary</span>
+<span class="sd">            An instance of the initialized library.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">directory</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span><span class="o">.</span><span class="n">expanduser</span><span class="p">()</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span>
+
+        <span class="c1"># Handle overwrite logic</span>
+        <span class="k">if</span> <span class="n">directory</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">overwrite</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;Directory `</span><span class="si">{</span><span class="n">directory</span><span class="si">}</span><span class="s2">` already exists. Use `overwrite=True` to recreate.&quot;</span>
+                <span class="p">)</span>
+            <span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+
+            <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>
+
+        <span class="c1"># Create necessary folders</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">__create_structures__</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>
+
+        <span class="c1"># Write the data file with parameter arrays</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">__write_datafile__</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">parameters</span><span class="p">)</span>
+
+        <span class="c1"># Write the configuration YAML</span>
+        <span class="bp">cls</span><span class="o">.</span><span class="n">__write_config__</span><span class="p">(</span><span class="n">directory</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="n">config</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span></div>
+
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__create_structures__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">directory</span><span class="p">:</span> <span class="n">Path</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create the required subdirectories for the new library.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        directory : str or Path</span>
+<span class="sd">            The base library directory.</span>
+<span class="sd">        parameters : dict</span>
+<span class="sd">            Parameter dictionary used for validation (optional).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="p">(</span><span class="n">directory</span> <span class="o">/</span> <span class="s2">&quot;cache&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">directory</span> <span class="o">/</span> <span class="s2">&quot;bin&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__write_datafile__</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">directory</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">parameters</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Sequence</span><span class="p">]):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Write the HDF5 library file with the parameter grid.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        directory : str or Path</span>
+<span class="sd">            Path to the library directory.</span>
+<span class="sd">        parameters : dict[str, Sequence]</span>
+<span class="sd">            Dictionary of parameter arrays.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">datafile_path</span> <span class="o">=</span> <span class="n">directory</span> <span class="o">/</span> <span class="s2">&quot;library.h5&quot;</span>
+
+        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">datafile_path</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">param_group</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">&quot;PARAMS&quot;</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">values</span> <span class="ow">in</span> <span class="n">parameters</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">key</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">__PARAMETERS__</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                        <span class="sa">f</span><span class="s2">&quot;Invalid parameter key `</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2">`. Allowed: </span><span class="si">{</span><span class="bp">cls</span><span class="o">.</span><span class="n">__PARAMETERS__</span><span class="si">}</span><span class="s2">&quot;</span>
+                    <span class="p">)</span>
+                <span class="n">param_group</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">values</span><span class="p">))</span>
+
+    <span class="nd">@classmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">__write_config__</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> <span class="n">directory</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Path</span><span class="p">],</span> <span class="n">config</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Write the config.yaml file using a ConfigManager.</span>
+
+<span class="sd">        Ensures that default fields are present, but allows user overrides and additions.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        directory : str or Path</span>
+<span class="sd">            Path to the library directory.</span>
+<span class="sd">        config : dict, optional</span>
+<span class="sd">            Optional dictionary of configuration values. May contain dotted or nested keys.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">xforge.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">ConfigManager</span>
+
+        <span class="n">config_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span> <span class="o">/</span> <span class="s2">&quot;config.yaml&quot;</span>
+        <span class="n">cfg</span> <span class="o">=</span> <span class="n">ConfigManager</span><span class="p">(</span><span class="n">config_path</span><span class="p">,</span> <span class="n">autosave</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Merge defaults and user-specified config; user config takes priority</span>
+        <span class="n">merged_config</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="bp">cls</span><span class="o">.</span><span class="n">__CONFIG__</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">merged_config</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">merged_config</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">cfg</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">value</span>
+
+    <span class="c1"># ========================== #</span>
+    <span class="c1"># Properties                 #</span>
+    <span class="c1"># ========================== #</span>
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">&quot;ConfigManager&quot;</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Accessor for the YAML-backed configuration.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        ConfigManager</span>
+<span class="sd">            Configuration manager that supports nested dictionary-style access.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__config__</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Accessor for the parameter arrays loaded from disk.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict[str, np.ndarray]</span>
+<span class="sd">            Dictionary of parameter arrays (1D), as stored in the &#39;PARAMS&#39; HDF5 group.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">__parameters__</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Total number of parameter combinations in the grid.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        int</span>
+<span class="sd">            The product of the lengths of all parameter value lists, representing the</span>
+<span class="sd">            total number of points in the parameter lattice to be explored.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">([</span><span class="nb">len</span><span class="p">(</span><span class="n">pv</span><span class="p">)</span> <span class="k">for</span> <span class="n">pk</span><span class="p">,</span> <span class="n">pv</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__parameters__</span><span class="o">.</span><span class="n">items</span><span class="p">()]))</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">shape</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">:</span>
+        <span class="k">return</span> <span class="nb">tuple</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pv</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">pv</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__parameters__</span><span class="o">.</span><span class="n">items</span><span class="p">())</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">is_generated</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Returns True if the library has been generated, i.e.,</span>
+<span class="sd">        if the &#39;LIBRARY&#39; group exists in the HDF5 file.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        bool</span>
+<span class="sd">            True if the synthetic library has been fully generated.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__assets__</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">],</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;LIBRARY&quot;</span> <span class="ow">in</span> <span class="n">f</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">temperatures</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Return the temperature grid used in the synthetic library.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        np.ndarray or None</span>
+<span class="sd">            Array of temperature values used in the simulation, or None if not generated.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_generated</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+
+        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__assets__</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">],</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">f</span><span class="p">[</span><span class="s2">&quot;LIBRARY&quot;</span><span class="p">][</span><span class="s2">&quot;temps&quot;</span><span class="p">][</span><span class="o">...</span><span class="p">]</span>
+
+<div class="viewcode-block" id="ModificationLibrary.library">
+<a class="viewcode-back" href="../../_as_gen/library.base.ModificationLibrary.library.html#library.arf_mod.ModificationLibrary.library">[docs]</a>
+    <span class="nd">@contextmanager</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">library</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;r&quot;</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Context manager for lazy access to the generated library results.</span>
+
+<span class="sd">        Yields</span>
+<span class="sd">        ------</span>
+<span class="sd">        Tuple[h5py.Dataset, h5py.Dataset]</span>
+<span class="sd">            A tuple of (results, temperatures) datasets from the &#39;LIBRARY&#39; group.</span>
+
+<span class="sd">        Raises</span>
+<span class="sd">        ------</span>
+<span class="sd">        RuntimeError</span>
+<span class="sd">            If the library has not been generated.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_generated</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span>
+                <span class="s2">&quot;This library has not been generated. No results available.&quot;</span>
+            <span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__assets__</span><span class="p">[</span><span class="s2">&quot;data&quot;</span><span class="p">],</span> <span class="n">mode</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">lib_group</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s2">&quot;LIBRARY&quot;</span><span class="p">]</span>
+            <span class="k">yield</span> <span class="n">lib_group</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">],</span> <span class="n">lib_group</span><span class="p">[</span><span class="s2">&quot;temps&quot;</span><span class="p">]</span></div>
+
+
+    <span class="c1"># ================================ #</span>
+    <span class="c1"># Library Generation               #</span>
+    <span class="c1"># ================================ #</span>
+<div class="viewcode-block" id="ModificationLibrary.generate_unmodified_configuration">
+<a class="viewcode-back" href="../../_as_gen/library.base.ModificationLibrary.generate_unmodified_configuration.html#library.arf_mod.ModificationLibrary.generate_unmodified_configuration">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_unmodified_configuration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">**</span><span class="n">parameters</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate the configuration dictionary for the unmodified system.</span>
+
+<span class="sd">        This configuration should define file paths and simulation parameters required</span>
+<span class="sd">        for generating or loading the standard model, including ARF, RMF, exposure, etc.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        id : int</span>
+<span class="sd">            Global index in the parameter space (flattened).</span>
+<span class="sd">        **parameters : dict</span>
+<span class="sd">            Dictionary of parameter values at this grid point.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict</span>
+<span class="sd">            Configuration dictionary containing file references and simulation settings.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="o">...</span></div>
+
+
+<div class="viewcode-block" id="ModificationLibrary.generate_modified_configuration">
+<a class="viewcode-back" href="../../_as_gen/library.base.ModificationLibrary.generate_modified_configuration.html#library.arf_mod.ModificationLibrary.generate_modified_configuration">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_modified_configuration</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="o">**</span><span class="n">parameters</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate the configuration dictionary for the modified system.</span>
+
+<span class="sd">        This configuration typically corresponds to a perturbed version of the unmodified</span>
+<span class="sd">        configuration—e.g., with a distorted ARF or a changed response matrix.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        id : int</span>
+<span class="sd">            Global index in the parameter space (flattened).</span>
+<span class="sd">        **parameters : dict</span>
+<span class="sd">            Dictionary of parameter values at this grid point.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        dict</span>
+<span class="sd">            Configuration dictionary for the modified system.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="o">...</span></div>
+
+
+<div class="viewcode-block" id="ModificationLibrary.generate_model_unmodified">
+<a class="viewcode-back" href="../../_as_gen/library.base.ModificationLibrary.generate_model_unmodified.html#library.arf_mod.ModificationLibrary.generate_model_unmodified">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_model_unmodified</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="o">**</span><span class="n">parameters</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Build and return the XSPEC model for the unmodified configuration.</span>
+
+<span class="sd">        This should construct the physical model (e.g., `tbabs*apec`) corresponding to the</span>
+<span class="sd">        unmodified simulation configuration for a given temperature.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        T : float</span>
+<span class="sd">            Temperature (or other synthetic variable) used to build the model.</span>
+<span class="sd">        **parameters : dict</span>
+<span class="sd">            Dictionary of parameter values at this grid point.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        xspec.Model</span>
+<span class="sd">            The unmodified XSPEC model instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="o">...</span></div>
+
+
+<div class="viewcode-block" id="ModificationLibrary.generate_model_modified">
+<a class="viewcode-back" href="../../_as_gen/library.base.ModificationLibrary.generate_model_modified.html#library.arf_mod.ModificationLibrary.generate_model_modified">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_model_modified</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="o">**</span><span class="n">parameters</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Build and return the XSPEC model for the modified configuration.</span>
+
+<span class="sd">        This typically reflects a perturbed version of the base model—e.g., using a</span>
+<span class="sd">        modified response or artificial distortion in the instrument model.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        T : float</span>
+<span class="sd">            Temperature (or other synthetic variable) used to build the model.</span>
+<span class="sd">        **parameters : dict</span>
+<span class="sd">            Dictionary of parameter values at this grid point.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        xspec.Model</span>
+<span class="sd">            The modified XSPEC model instance.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="o">...</span></div>
+
+
+<div class="viewcode-block" id="ModificationLibrary.fit_unmodified">
+<a class="viewcode-back" href="../../_as_gen/library.base.ModificationLibrary.fit_unmodified.html#library.arf_mod.ModificationLibrary.fit_unmodified">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit_unmodified</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="o">**</span><span class="n">parameters</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform fitting on the synthetic data using the unmodified configuration.</span>
+
+<span class="sd">        This function should load the synthetic dataset (created by the modified model),</span>
+<span class="sd">        apply the unmodified model, and extract the best-fit parameters or relevant statistics.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        config : dict</span>
+<span class="sd">            Unmodified configuration dictionary.</span>
+<span class="sd">        **parameters : dict</span>
+<span class="sd">            Dictionary of parameter values at this grid point.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        float or array-like</span>
+<span class="sd">            Result of the fit (e.g., recovered temperature or fit statistic).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="o">...</span></div>
+
+
+<div class="viewcode-block" id="ModificationLibrary.fit_modified">
+<a class="viewcode-back" href="../../_as_gen/library.base.ModificationLibrary.fit_modified.html#library.arf_mod.ModificationLibrary.fit_modified">[docs]</a>
+    <span class="nd">@abstractmethod</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">fit_modified</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="o">**</span><span class="n">parameters</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">,</span> <span class="nb">float</span><span class="p">]:</span>
+        <span class="o">...</span></div>
+
+
+    <span class="c1"># -- Tooling -- #</span>
+    <span class="c1"># These are methods which are used as tools in the generation</span>
+    <span class="c1"># of the library but which don&#39;t generally require modification.</span>
+<div class="viewcode-block" id="ModificationLibrary.assign_mpi_load">
+<a class="viewcode-back" href="../../_as_gen/library.base.ModificationLibrary.assign_mpi_load.html#library.arf_mod.ModificationLibrary.assign_mpi_load">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">assign_mpi_load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mpi_size</span><span class="p">,</span> <span class="n">mpi_rank</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Given a specific number of MPI ranks (mpi_size) and a specific MPI rank id</span>
+<span class="sd">        (mpi_rank), allocate the correct set of linearlized indices for the worker.</span>
+<span class="sd">        Each rank receives a contiguous block of indices to process:</span>
+
+<span class="sd">        - The first `r = size % mpi_size` ranks receive `q + 1` items.</span>
+<span class="sd">        - The remaining `mpi_size - r` ranks receive `q` items.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        start : int</span>
+<span class="sd">            Inclusive start index in the global flattened parameter grid for this rank.</span>
+<span class="sd">        stop : int</span>
+<span class="sd">            Exclusive stop index in the global flattened parameter grid for this rank.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Compute base chunk size and remainder</span>
+        <span class="n">q</span><span class="p">,</span> <span class="n">r</span> <span class="o">=</span> <span class="nb">divmod</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">size</span><span class="p">,</span> <span class="n">mpi_size</span><span class="p">)</span>
+
+        <span class="c1"># Determine the number of items for each rank</span>
+        <span class="n">chunk_sizes</span> <span class="o">=</span> <span class="p">[</span><span class="n">q</span> <span class="o">+</span> <span class="mi">1</span> <span class="k">if</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">r</span> <span class="k">else</span> <span class="n">q</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">mpi_size</span><span class="p">)]</span>
+
+        <span class="c1"># Compute prefix sums to get start/stop indices</span>
+        <span class="n">starts</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">([</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">chunk_sizes</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+        <span class="n">stops</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">chunk_sizes</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+            <span class="s2">&quot;Assigned process </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s</span><span class="s2"> parameters from </span><span class="si">%s</span><span class="s2"> to </span><span class="si">%s</span><span class="s2">.&quot;</span><span class="p">,</span>
+            <span class="n">mpi_rank</span><span class="p">,</span>
+            <span class="n">stops</span><span class="p">[</span><span class="n">mpi_rank</span><span class="p">]</span> <span class="o">-</span> <span class="n">starts</span><span class="p">[</span><span class="n">mpi_rank</span><span class="p">],</span>
+            <span class="n">starts</span><span class="p">[</span><span class="n">mpi_rank</span><span class="p">],</span>
+            <span class="n">stops</span><span class="p">[</span><span class="n">mpi_rank</span><span class="p">],</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="nb">int</span><span class="p">(</span><span class="n">starts</span><span class="p">[</span><span class="n">mpi_rank</span><span class="p">]),</span> <span class="nb">int</span><span class="p">(</span><span class="n">stops</span><span class="p">[</span><span class="n">mpi_rank</span><span class="p">])</span></div>
+
+
+<div class="viewcode-block" id="ModificationLibrary.create_rank_output_file">
+<a class="viewcode-back" href="../../_as_gen/library.base.ModificationLibrary.create_rank_output_file.html#library.arf_mod.ModificationLibrary.create_rank_output_file">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">create_rank_output_file</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">stop</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">temperatures</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">mpi_rank</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Path</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create an HDF5 output file for this MPI rank to store fitting results.</span>
+
+<span class="sd">        The file is saved in the output directory under the name:</span>
+<span class="sd">        `libgen_rank_&lt;rank&gt;.h5`, and contains a dataset named &#39;results&#39; with</span>
+<span class="sd">        shape `(stop - start, len(temperatures), 3)`.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        start : int</span>
+<span class="sd">            Start index (inclusive) of the parameter grid assigned to this rank.</span>
+<span class="sd">        stop : int</span>
+<span class="sd">            Stop index (exclusive) of the parameter grid assigned to this rank.</span>
+<span class="sd">        temperatures : Sequence[float]</span>
+<span class="sd">            List of temperature values used in the simulation.</span>
+<span class="sd">        mpi_rank: int</span>
+<span class="sd">            The MPI rank for this process.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        Path</span>
+<span class="sd">            The path to the output file that was created.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Determine the correct path to the temporary rank-specific</span>
+        <span class="c1"># data. This SHOULD always be in the ``temp`` directory as defined</span>
+        <span class="c1"># above. Typically in a subdirectory (outputs).</span>
+        <span class="n">rank_output_directory</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cachedir__</span> <span class="o">/</span> <span class="s2">&quot;outputs&quot;</span>
+        <span class="n">rank_output_directory</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Create the rank output file given the MPI rank.</span>
+        <span class="n">filename</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;libgen_rank_</span><span class="si">{</span><span class="n">mpi_rank</span><span class="si">}</span><span class="s2">.h5&quot;</span>
+        <span class="n">filepath</span> <span class="o">=</span> <span class="n">rank_output_directory</span> <span class="o">/</span> <span class="n">filename</span>
+
+        <span class="c1"># Now build the dataset. To do so, we open the</span>
+        <span class="c1"># HDF5 file and insert a dataset in the main directory</span>
+        <span class="c1"># containing the data.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Building output file: </span><span class="si">%s</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="n">filepath</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">filepath</span><span class="p">,</span> <span class="s2">&quot;w&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">fio</span><span class="p">:</span>
+            <span class="c1"># Determine how many temperature samples</span>
+            <span class="c1"># we&#39;re taking in order to build the array.</span>
+            <span class="n">Ntemp</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">temperatures</span><span class="p">)</span>
+            <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">stop</span> <span class="o">-</span> <span class="n">start</span><span class="p">,</span> <span class="n">Ntemp</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+
+            <span class="c1"># Now create the dataset.</span>
+            <span class="n">fio</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s2">&quot;results&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;f8&quot;</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s2">&quot;gzip&quot;</span><span class="p">)</span>
+
+            <span class="c1"># Add some additional metadata flags.</span>
+            <span class="n">fio</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;rank&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mpi_rank</span>
+            <span class="n">fio</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;start_index&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">start</span>
+            <span class="n">fio</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;stop_index&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stop</span>
+            <span class="n">fio</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;temperature_count&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">Ntemp</span>
+            <span class="n">fio</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;parameter_count&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stop</span> <span class="o">-</span> <span class="n">start</span>
+
+        <span class="k">return</span> <span class="n">filepath</span></div>
+
+
+<div class="viewcode-block" id="ModificationLibrary.build_synthetic_data">
+<a class="viewcode-back" href="../../_as_gen/library.base.ModificationLibrary.build_synthetic_data.html#library.arf_mod.ModificationLibrary.build_synthetic_data">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">build_synthetic_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">tidx</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">config</span><span class="p">,</span> <span class="o">**</span><span class="n">parameters</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate synthetic photon data for a given parameter combination and temperature.</span>
+
+<span class="sd">        This method uses the modified configuration and model to simulate a synthetic</span>
+<span class="sd">        observation via XSPEC&#39;s `fakeit` functionality. It saves the generated spectrum</span>
+<span class="sd">        to a `.pha` file and returns the loaded data.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        idx : int</span>
+<span class="sd">            Global index of the parameter grid point.</span>
+<span class="sd">        tidx : int</span>
+<span class="sd">            Index of the temperature within the current temperature list.</span>
+<span class="sd">        T : float</span>
+<span class="sd">            Temperature used to construct the synthetic model.</span>
+<span class="sd">        config : dict</span>
+<span class="sd">            Simulation configuration (e.g., response, arf, exposure).</span>
+<span class="sd">        **parameters : dict</span>
+<span class="sd">            Parameter values at this grid point.</span>
+
+<span class="sd">        Returns</span>
+<span class="sd">        -------</span>
+<span class="sd">        xspec.Spectrum</span>
+<span class="sd">            The synthetic XSPEC spectrum loaded into memory.</span>
+
+<span class="sd">        Notes</span>
+<span class="sd">        -----</span>
+<span class="sd">        This function clears all existing XSPEC models and data, both before</span>
+<span class="sd">        and after generating the synthetic dataset.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Clear all existing XSPEC states</span>
+        <span class="n">xspec</span><span class="o">.</span><span class="n">AllModels</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="n">xspec</span><span class="o">.</span><span class="n">AllData</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+
+        <span class="c1"># Construct the model and set it as the</span>
+        <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_model_modified</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="o">**</span><span class="n">parameters</span><span class="p">)</span>
+
+        <span class="c1"># Generate synthetic spectrum using mod_config and mod_model</span>
+        <span class="n">synth_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cachedir__</span> <span class="o">/</span> <span class="s2">&quot;synth&quot;</span>
+        <span class="n">synth_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">synth_path</span> <span class="o">=</span> <span class="n">synth_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;synth_</span><span class="si">{</span><span class="n">idx</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">tidx</span><span class="si">}</span><span class="s2">.pha&quot;</span>
+        <span class="n">xspec</span><span class="o">.</span><span class="n">AllData</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+        <span class="n">fakeit</span> <span class="o">=</span> <span class="n">xspec</span><span class="o">.</span><span class="n">FakeitSettings</span><span class="p">(</span>
+            <span class="n">response</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;response&quot;</span><span class="p">],</span>
+            <span class="n">arf</span><span class="o">=</span><span class="n">config</span><span class="p">[</span><span class="s2">&quot;arf&quot;</span><span class="p">],</span>
+            <span class="n">exposure</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;exposure&quot;</span><span class="p">,</span> <span class="mi">50_000</span><span class="p">),</span>
+            <span class="n">background</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;background&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+            <span class="n">correction</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;correction&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+            <span class="n">backExposure</span><span class="o">=</span><span class="n">config</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;backExposure&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">),</span>
+            <span class="n">fileName</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">synth_path</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Clear existing spectra to avoid collisions</span>
+        <span class="n">xspec</span><span class="o">.</span><span class="n">AllData</span><span class="o">.</span><span class="n">fakeit</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="n">fakeit</span><span class="p">])</span>
+
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+            <span class="s2">&quot;Created synthetic data (</span><span class="si">%s</span><span class="s2">,</span><span class="si">%s</span><span class="s2">) with parameters </span><span class="si">%s</span><span class="s2">.&quot;</span><span class="p">,</span>
+            <span class="n">idx</span><span class="p">,</span>
+            <span class="n">tidx</span><span class="p">,</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">parameters</span><span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Return the generated synthetic datasets</span>
+        <span class="k">return</span> <span class="n">xspec</span><span class="o">.</span><span class="n">AllData</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_finalize_library</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">temperatures</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="nb">float</span><span class="p">],</span> <span class="n">mpisize</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Finalize the generation of the synthetic library by merging results</span>
+<span class="sd">        from all MPI ranks using Dask and writing into the HDF5 file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        temperatures : Sequence[float]</span>
+<span class="sd">            The array of simulated temperatures.</span>
+<span class="sd">        mpisize : int</span>
+<span class="sd">            The total number of MPI processes used in the generation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="kn">import</span><span class="w"> </span><span class="nn">dask.array</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">da</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">dask</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">dask.array.core</span><span class="w"> </span><span class="kn">import</span> <span class="n">slices_from_chunks</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Finalizing library with Dask...&quot;</span><span class="p">)</span>
+        <span class="n">Ntemp</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">temperatures</span><span class="p">)</span>
+        <span class="n">output_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__cachedir__</span> <span class="o">/</span> <span class="s2">&quot;outputs&quot;</span>
+
+        <span class="n">datasets</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">darrs</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># Load all per-rank result datasets as Dask arrays</span>
+            <span class="k">for</span> <span class="n">rank</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">mpisize</span><span class="p">):</span>
+                <span class="n">file_path</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;libgen_rank_</span><span class="si">{</span><span class="n">rank</span><span class="si">}</span><span class="s2">.h5&quot;</span>
+                <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">file_path</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span>
+                <span class="n">datasets</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+
+                <span class="n">dset</span> <span class="o">=</span> <span class="n">f</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">]</span>
+                <span class="n">darrs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">da</span><span class="o">.</span><span class="n">from_array</span><span class="p">(</span><span class="n">dset</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">))</span>
+
+            <span class="c1"># Concatenate and reshape</span>
+            <span class="n">flat_dask_array</span> <span class="o">=</span> <span class="n">da</span><span class="o">.</span><span class="n">concatenate</span><span class="p">(</span><span class="n">darrs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">full_shape</span> <span class="o">=</span> <span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">Ntemp</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+            <span class="n">reshaped</span> <span class="o">=</span> <span class="n">flat_dask_array</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">full_shape</span><span class="p">)</span>
+
+            <span class="c1"># Write to final HDF5 file</span>
+            <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__datapath__</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="k">if</span> <span class="s2">&quot;LIBRARY&quot;</span> <span class="ow">in</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="k">del</span> <span class="n">f</span><span class="p">[</span><span class="s2">&quot;LIBRARY&quot;</span><span class="p">]</span>
+                <span class="n">lib_group</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">&quot;LIBRARY&quot;</span><span class="p">)</span>
+                <span class="n">lib_group</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span>
+                    <span class="s2">&quot;temps&quot;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">temperatures</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;f8&quot;</span>
+                <span class="p">)</span>
+
+                <span class="n">result_ds</span> <span class="o">=</span> <span class="n">lib_group</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span>
+                    <span class="s2">&quot;results&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="n">reshaped</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;f8&quot;</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s2">&quot;gzip&quot;</span>
+                <span class="p">)</span>
+
+                <span class="c1"># Write each chunk block-by-block to avoid memory overuse</span>
+                <span class="k">for</span> <span class="n">block</span><span class="p">,</span> <span class="n">slices</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+                    <span class="n">reshaped</span><span class="o">.</span><span class="n">to_delayed</span><span class="p">()</span><span class="o">.</span><span class="n">flatten</span><span class="p">(),</span> <span class="n">slices_from_chunks</span><span class="p">(</span><span class="n">reshaped</span><span class="o">.</span><span class="n">chunks</span><span class="p">)</span>
+                <span class="p">):</span>
+                    <span class="n">result_ds</span><span class="p">[</span><span class="n">slices</span><span class="p">]</span> <span class="o">=</span> <span class="n">compute</span><span class="p">(</span><span class="n">block</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Library written to: </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__datapath__</span><span class="p">)</span>
+
+        <span class="k">finally</span><span class="p">:</span>
+            <span class="c1"># Close all HDF5 datasets</span>
+            <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">datasets</span><span class="p">:</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+            <span class="c1"># Clean up per-rank output files</span>
+            <span class="k">for</span> <span class="n">rank</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">mpisize</span><span class="p">):</span>
+                <span class="n">file_path</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s2">&quot;libgen_rank_</span><span class="si">{</span><span class="n">rank</span><span class="si">}</span><span class="s2">.h5&quot;</span>
+                <span class="k">if</span> <span class="n">file_path</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+                    <span class="n">file_path</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Deleted </span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">file_path</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Library finalization complete.&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ModificationLibrary.generate_library">
+<a class="viewcode-back" href="../../_as_gen/library.base.ModificationLibrary.generate_library.html#library.arf_mod.ModificationLibrary.generate_library">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">generate_library</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">temperatures</span><span class="p">,</span> <span class="n">clear_cache</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Runs the generation and fitting loop for this MPI rank. For each assigned</span>
+<span class="sd">        parameter set and temperature, it creates synthetic data, performs both unmodified</span>
+<span class="sd">        and modified fits, and writes the result to a rank-specific HDF5 file.</span>
+
+<span class="sd">        Parameters</span>
+<span class="sd">        ----------</span>
+<span class="sd">        temperatures : Sequence[float]</span>
+<span class="sd">            List of temperature values to loop over in synthetic data generation.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># @@ Configure the run @@ #</span>
+        <span class="c1"># On this processor, we&#39;re going to configure the run by</span>
+        <span class="c1"># determining the relevant start and stop indices and</span>
+        <span class="c1"># creating the data file. This requires realizing the MPI configuration.</span>
+        <span class="n">_mpicomm</span> <span class="o">=</span> <span class="n">get_mpi</span><span class="p">()</span>
+        <span class="n">_mpirank</span> <span class="o">=</span> <span class="n">_mpicomm</span><span class="o">.</span><span class="n">Get_rank</span><span class="p">()</span>
+        <span class="n">_mpisize</span> <span class="o">=</span> <span class="n">_mpicomm</span><span class="o">.</span><span class="n">Get_size</span><span class="p">()</span>
+
+        <span class="c1"># Determine range of parameter indices for this rank</span>
+        <span class="n">pstart_idx</span><span class="p">,</span> <span class="n">pstop_idx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">assign_mpi_load</span><span class="p">(</span><span class="n">_mpisize</span><span class="p">,</span> <span class="n">_mpirank</span><span class="p">)</span>
+
+        <span class="c1"># Open output file and get write handle</span>
+        <span class="n">data_file</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_rank_output_file</span><span class="p">(</span>
+            <span class="n">pstart_idx</span><span class="p">,</span> <span class="n">pstop_idx</span><span class="p">,</span> <span class="n">temperatures</span><span class="p">,</span> <span class="n">_mpirank</span>
+        <span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">data_file</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">df</span><span class="p">:</span>
+            <span class="c1"># @@ Iterate through run @@ #</span>
+            <span class="c1"># We now iterate through the run of indices and</span>
+            <span class="c1"># perform the analysis at each index.</span>
+            <span class="k">for</span> <span class="n">lidx</span><span class="p">,</span> <span class="n">gidx</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="n">pstart_idx</span><span class="p">,</span> <span class="n">pstop_idx</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Start iteration (</span><span class="si">%s</span><span class="s2">,</span><span class="si">%s</span><span class="s2">).&quot;</span><span class="p">,</span> <span class="n">lidx</span><span class="p">,</span> <span class="n">gidx</span><span class="p">)</span>
+                <span class="c1"># Construct the N-dim index from the gidx so that we can access</span>
+                <span class="c1"># the parameter dictionary given our position in the workload.</span>
+                <span class="n">midx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unravel_index</span><span class="p">(</span><span class="n">gidx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+                <span class="n">iteration_parameters</span> <span class="o">=</span> <span class="p">{</span>
+                    <span class="n">paramkey</span><span class="p">:</span> <span class="n">paramvalue</span><span class="p">[</span><span class="n">midx</span><span class="p">[</span><span class="n">param_idx</span><span class="p">]]</span>
+                    <span class="k">for</span> <span class="n">param_idx</span><span class="p">,</span> <span class="p">(</span><span class="n">paramkey</span><span class="p">,</span> <span class="n">paramvalue</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">__parameters__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                    <span class="p">)</span>
+                <span class="p">}</span>
+
+                <span class="c1"># Generate the configurations for this parameter set. These</span>
+                <span class="c1"># are going to be used during the fitting procedure.</span>
+                <span class="n">mod_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_modified_configuration</span><span class="p">(</span>
+                    <span class="n">gidx</span><span class="p">,</span> <span class="o">**</span><span class="n">iteration_parameters</span>
+                <span class="p">)</span>
+                <span class="n">unmod_config</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_unmodified_configuration</span><span class="p">(</span>
+                    <span class="n">gidx</span><span class="p">,</span> <span class="o">**</span><span class="n">iteration_parameters</span>
+                <span class="p">)</span>
+
+                <span class="c1"># @@ Enter Temperature Loop @@ #</span>
+                <span class="c1"># Now for each of the library parameter values, we iterate over all</span>
+                <span class="c1"># of the temperatures in order to sample the parameter space.</span>
+                <span class="k">for</span> <span class="n">tid</span><span class="p">,</span> <span class="n">T</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">temperatures</span><span class="p">):</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Start temperature iteration </span><span class="si">%s</span><span class="s2">.&quot;</span><span class="p">,</span> <span class="n">tid</span><span class="p">)</span>
+                    <span class="c1"># Build the modified model so that we can use it</span>
+                    <span class="c1"># to create the synthetic data.</span>
+                    <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_model_modified</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="o">**</span><span class="n">iteration_parameters</span><span class="p">)</span>
+
+                    <span class="c1"># Build the synthetic data.</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">build_synthetic_data</span><span class="p">(</span>
+                        <span class="n">gidx</span><span class="p">,</span> <span class="n">tid</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">mod_config</span><span class="p">,</span> <span class="o">**</span><span class="n">iteration_parameters</span>
+                    <span class="p">)</span>
+
+                    <span class="c1"># Fit using unmodified model</span>
+                    <span class="n">mod_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_modified</span><span class="p">(</span><span class="n">mod_config</span><span class="p">)</span>
+
+                    <span class="c1"># Clear the model and rebuild with the</span>
+                    <span class="c1"># unmodified</span>
+                    <span class="n">xspec</span><span class="o">.</span><span class="n">AllModels</span><span class="o">.</span><span class="n">clear</span><span class="p">()</span>
+                    <span class="n">_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generate_model_unmodified</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="o">**</span><span class="n">iteration_parameters</span><span class="p">)</span>
+
+                    <span class="c1"># Build the mod result</span>
+                    <span class="n">unmod_result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_unmodified</span><span class="p">(</span><span class="n">unmod_config</span><span class="p">)</span>
+
+                    <span class="c1"># Optionally: fit using modified model (if relevant)</span>
+                    <span class="c1"># mod_result = self.fit_modified()</span>
+
+                    <span class="c1"># Store result</span>
+                    <span class="n">df</span><span class="p">[</span><span class="s2">&quot;results&quot;</span><span class="p">][</span>
+                        <span class="n">lidx</span><span class="p">,</span> <span class="n">tid</span><span class="p">,</span> <span class="p">:</span>
+                    <span class="p">]</span> <span class="o">=</span> <span class="n">unmod_result</span>  <span class="c1"># or mod_result, depending on target</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span>
+                        <span class="s2">&quot;Iteration (</span><span class="si">%s</span><span class="s2">,</span><span class="si">%s</span><span class="s2">,</span><span class="si">%s</span><span class="s2">) -- T_mod=</span><span class="si">%s</span><span class="s2">, T_unmod=</span><span class="si">%s</span><span class="s2">, T_True=</span><span class="si">%s</span><span class="s2">&quot;</span><span class="p">,</span>
+                        <span class="n">lidx</span><span class="p">,</span>
+                        <span class="n">gidx</span><span class="p">,</span>
+                        <span class="n">tid</span><span class="p">,</span>
+                        <span class="n">mod_result</span><span class="p">,</span>
+                        <span class="n">unmod_result</span><span class="p">,</span>
+                        <span class="n">T</span><span class="p">,</span>
+                    <span class="p">)</span>
+
+                    <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Start temperature iteration </span><span class="si">%s</span><span class="s2">. [DONE]&quot;</span><span class="p">,</span> <span class="n">tid</span><span class="p">)</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Start iteration (</span><span class="si">%s</span><span class="s2">,</span><span class="si">%s</span><span class="s2">). [DONE]&quot;</span><span class="p">,</span> <span class="n">lidx</span><span class="p">,</span> <span class="n">gidx</span><span class="p">)</span>
+
+        <span class="c1"># We now exit except for the RANK-0 process, which will complete by</span>
+        <span class="c1"># combining the relevant data files and cleaning up the environment.</span>
+        <span class="k">if</span> <span class="n">_mpirank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_finalize_library</span><span class="p">(</span><span class="n">temperatures</span><span class="p">,</span> <span class="n">_mpisize</span><span class="p">)</span>
+            <span class="k">finally</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">clear_cache</span><span class="p">:</span>
+                    <span class="kn">import</span><span class="w"> </span><span class="nn">shutil</span>
+
+                    <span class="n">shutil</span><span class="o">.</span><span class="n">rmtree</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__assets__</span><span class="p">[</span><span class="s2">&quot;cache&quot;</span><span class="p">])</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__assets__</span><span class="p">[</span><span class="s2">&quot;cache&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Eliza Diggins.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

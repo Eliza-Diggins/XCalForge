@@ -1,6 +1,0 @@
-library.base.ModificationLibrary.fit\_unmodified
-================================================
-
-.. currentmodule:: library.base
-
-.. automethod:: ModificationLibrary.fit_unmodified

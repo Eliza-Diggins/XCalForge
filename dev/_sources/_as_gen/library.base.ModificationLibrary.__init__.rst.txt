@@ -1,6 +1,0 @@
-library.base.ModificationLibrary.\_\_init\_\_
-=============================================
-
-.. currentmodule:: library.base
-
-.. automethod:: ModificationLibrary.__init__

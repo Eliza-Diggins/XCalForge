@@ -1,6 +1,0 @@
-library.arf\_mod.GaussianARFLibrary.build\_synthetic\_data
-==========================================================
-
-.. currentmodule:: library.arf_mod
-
-.. automethod:: GaussianARFLibrary.build_synthetic_data

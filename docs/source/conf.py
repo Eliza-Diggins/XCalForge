@@ -19,6 +19,9 @@ import matplotlib  # noqa: F401
 
 sys.path.insert(0, os.path.abspath("../.."))
 sys.path.insert(0, os.path.abspath("../../xforge"))
+
+autodoc_mock_imports = ["xspec", "mpi4py"]
+
 # -- Project information -----------------------------------------------------
 
 project = "XCalForge"

@@ -1,6 +1,0 @@
-library.arf\_mod.GaussianARFLibrary.create\_library
-===================================================
-
-.. currentmodule:: library.arf_mod
-
-.. automethod:: GaussianARFLibrary.create_library

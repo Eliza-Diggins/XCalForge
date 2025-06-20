@@ -1,6 +1,0 @@
-library.arf\_mod.GaussianARFLibrary.temperatures
-================================================
-
-.. currentmodule:: library.arf_mod
-
-.. autoproperty:: GaussianARFLibrary.temperatures

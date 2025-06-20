@@ -1,0 +1,83 @@
+# ================================== #
+# Build System Configuration         #
+# ================================== #
+# Setup the build system for setup.py
+[build-system]
+requires = [
+  "setuptools>=61.2",
+  "setuptools_scm[toml]>=6.2",
+  "oldest-supported-numpy",
+  "Cython>=0.29",
+]
+build-backend = "setuptools.build_meta"
+
+# ================================== #
+# Project Configuration              #
+# ================================== #
+# Configuration for the project details.
+[project]
+name = "specforge"
+dynamic = ["version"]
+description = "X-Ray telescope cross calibration correction simulator."
+authors = [
+  { name = "Eliza Diggins", email = 'eliza.diggins@berkeley.edu'}
+]
+license = { text = "GPL-3.0-or-later" }
+readme = "README.md"
+requires-python = ">=3.9"
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
+  "Operating System :: OS Independent",
+]
+dependencies = [
+  "numpy>=1.22",
+  "h5py>=3.0",
+  "dask",
+]
+
+# ================================== #
+# Optional Dependencies              #
+# ================================== #
+# Configuration for the project details.
+[project.optional-dependencies]
+dev = [
+  "black",
+  "pre-commit",
+]
+docs = [
+  'alabaster>=1.0.0',
+  'matplotlib>=3.9.2',
+  'myst-parser>=4.0.0',
+  "pydata-sphinx-theme>=0.15.2",
+  'nbsphinx>=0.9.5',
+  'jupyter>=1.1.1',
+  'sphinx>=8.1.3',
+  'sphinx_design>=0.6.1',
+  'sphinx-plot-directive>=1.0.5',
+  'sphinxcontrib-applehelp>=2.0.0',
+  'sphinxcontrib-bibtex>=2.6.3',
+  'sphinxcontrib-devhelp>=2.0.0',
+  'sphinxcontrib-htmlhelp>=2.1.0',
+  'sphinxcontrib-jsmath>=1.0.1',
+  'sphinxcontrib-qthelp>=2.0.0',
+  'sphinxcontrib-serializinghtml>=2.0.0',
+  'sphinxcontrib-tikz>=0.4.20',
+  "numpydoc",
+]
+# ================================== #
+# Tools                              #
+# ================================== #
+[tool.setuptools]
+packages = { find = { include = ["specforge*"] } }
+include-package-data = true
+
+[tool.setuptools_scm]
+version_file = "specforge/_version.py"
+local_scheme = "no-local-version"
+fallback_version = "0.0.0"
+
+
+[tool.black]
+line-length = 88
+target-version = ["py39"]

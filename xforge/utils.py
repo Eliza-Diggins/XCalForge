@@ -1,13 +1,15 @@
 """
 Utility functions for SpecForge.
 """
-from typing import Union
 import importlib
 import logging
 import sys
-import yaml
-from pathlib import Path
 from collections.abc import MutableMapping
+from pathlib import Path
+from typing import Union
+
+import yaml
+
 
 class ConfigManager(MutableMapping):
     def __init__(self, path: Union[str, Path], autosave: bool = True):
@@ -18,7 +20,7 @@ class ConfigManager(MutableMapping):
     def _load(self):
         if not self._path.exists():
             return {}
-        with open(self._path, "r") as f:
+        with open(self._path) as f:
             return yaml.safe_load(f) or {}
 
     def _save(self):
@@ -65,6 +67,7 @@ class ConfigManager(MutableMapping):
     def to_dict(self):
         return self._data
 
+
 def get_xspec():
     """
     Safely load the XSPEC PyXspec module, avoiding re-imports that can cause CLI-level deadlocks.
@@ -92,12 +95,53 @@ def get_xspec():
     >>> xspec = get_xspec()
     >>> xspec.AllData.clear()
     """
-    if 'xspec' in sys.modules:
-        return sys.modules['xspec']
-    
+    if "xspec" in sys.modules:
+        return sys.modules["xspec"]
+
     try:
-        xspec = importlib.import_module('xspec')
+        xspec = importlib.import_module("xspec")
         return xspec
     except ImportError as e:
-        logging.error("Failed to import xspec module. Ensure PyXspec is installed and configured.")
+        logging.error(
+            "Failed to import xspec module. Ensure PyXspec is installed and configured."
+        )
+        raise e
+
+
+def get_mpi():
+    """
+    Safely load the MPI communicator from mpi4py.
+
+    Returns
+    -------
+    mpi4py.MPI.Comm
+        The `MPI.COMM_WORLD` communicator.
+
+    Raises
+    ------
+    ImportError
+        If `mpi4py` is not available or cannot be loaded.
+
+    Notes
+    -----
+    - Ensures `mpi4py` is imported only once.
+    - Useful in environments where MPI may not be available by default.
+    - If `mpi4py` is not found, logs an error and raises ImportError.
+
+    Example
+    -------
+    >>> comm = get_mpi()
+    >>> rank = comm.Get_rank()
+    """
+    if "mpi4py.MPI" in sys.modules:
+        return sys.modules["mpi4py.MPI"].COMM_WORLD
+
+    try:
+        from mpi4py import MPI
+
+        return MPI.COMM_WORLD
+    except ImportError as e:
+        logging.error(
+            "Failed to import mpi4py. Ensure MPI and mpi4py are correctly installed and configured."
+        )
         raise e

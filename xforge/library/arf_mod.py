@@ -1,12 +1,15 @@
 """
-Library modification routines predicated on the use of 
+Library modification routines predicated on the use of
 ARF modifications.
 """
-from .base import ModificationLibrary
-from specforge.utils import get_xspec
 from pathlib import Path
-from astropy.table import Table
+
 import numpy as np
+from astropy.table import Table
+
+from xforge.utils import get_xspec
+
+from .base import ModificationLibrary
 
 xspec = get_xspec()
 
@@ -23,7 +26,7 @@ class GaussianARFLibrary(ModificationLibrary):
     __CONFIG__ = {
         "logging.level": "INFO",
         "input.arf": "base.arf",
-        "input.rmf": "base.rmf"
+        "input.rmf": "base.rmf",
     }
 
     # ========================== #
@@ -37,15 +40,25 @@ class GaussianARFLibrary(ModificationLibrary):
         # require that the configuration correctly points to
         # existing arf and rmf files. If it does not, we need
         # to warn the user.
-        self.__assets__['base_arf'] = Path(self.__config__['input.arf']).expanduser().resolve()
-        self.__assets__['base_rmf'] = Path(self.__config__['input.rmf']).expanduser().resolve()
+        self.__assets__["base_arf"] = (
+            Path(self.__config__["input.arf"]).expanduser().resolve()
+        )
+        self.__assets__["base_rmf"] = (
+            Path(self.__config__["input.rmf"]).expanduser().resolve()
+        )
 
-        if not self.__assets__['base_arf'].exists():
-            self.logger.warning("The base arf at %s doesn't exist. Update the config.", self.__assets__['base_arf'])
-        if not self.__assets__['base_rmf'].exists():
-            self.logger.warning("The base rmf at %s doesn't exist. Update the config.", self.__assets__['base_rmf'])
+        if not self.__assets__["base_arf"].exists():
+            self.logger.warning(
+                "The base arf at %s doesn't exist. Update the config.",
+                self.__assets__["base_arf"],
+            )
+        if not self.__assets__["base_rmf"].exists():
+            self.logger.warning(
+                "The base rmf at %s doesn't exist. Update the config.",
+                self.__assets__["base_rmf"],
+            )
 
-        # Create the buffers for storing the loaded 
+        # Create the buffers for storing the loaded
         # arf and rmf if they are asked for.
         self._loaded_base_arf = None
         self._loaded_base_rmf = None
@@ -57,24 +70,30 @@ class GaussianARFLibrary(ModificationLibrary):
     # can be created smoothly. These do not actually run the
     # library generation process.
     @classmethod
-    def create_library(cls,
-                       directory,
-                       parameters,
-                       base_arf,
-                       base_rmf,
-                       overwrite: bool = False,
-                       config = None
-                       ):
-        # Ensure that the base arf and base rmf exist 
+    def create_library(
+        cls,
+        directory,
+        parameters,
+        base_arf,
+        base_rmf,
+        overwrite: bool = False,
+        config=None,
+    ):
+        # Ensure that the base arf and base rmf exist
         # and are paths.
-        base_arf,base_rmf = Path(base_arf).expanduser().resolve(), Path(base_rmf).expanduser().resolve()
+        base_arf, base_rmf = (
+            Path(base_arf).expanduser().resolve(),
+            Path(base_rmf).expanduser().resolve(),
+        )
 
         config = config if config is not None else {}
 
-        config['input.arf'] = str(base_arf)
-        config['input.rmf'] = str(base_rmf)
+        config["input.arf"] = str(base_arf)
+        config["input.rmf"] = str(base_rmf)
 
-        return super().create_library(directory,parameters,overwrite=overwrite,config=config)
+        return super().create_library(
+            directory, parameters, overwrite=overwrite, config=config
+        )
 
     # ========================== #
     # Properties                 #
@@ -82,14 +101,14 @@ class GaussianARFLibrary(ModificationLibrary):
     @property
     def base_arf_table(self):
         if self._loaded_base_arf is None:
-            self._loaded_base_arf = Table.read(self.__assets__['base_arf'])
+            self._loaded_base_arf = Table.read(self.__assets__["base_arf"])
 
         return self._loaded_base_arf
 
     @property
     def base_rmf_table(self):
         if self._loaded_base_rmf is None:
-            self._loaded_base_rmf = Table.read(self.__assets__['base_rmf'])
+            self._loaded_base_rmf = Table.read(self.__assets__["base_rmf"])
 
         return self._loaded_base_rmf
 
@@ -107,8 +126,8 @@ class GaussianARFLibrary(ModificationLibrary):
         """
         arf = self.base_arf_table.copy()
         bin_centers = 0.5 * (arf["ENERG_LO"] + arf["ENERG_HI"])
-        profile = A * np.exp(-((bin_centers - mu) / sigma) ** 2)
-        arf["SPECRESP"] *= (1.0 + profile)
+        profile = A * np.exp(-(((bin_centers - mu) / sigma) ** 2))
+        arf["SPECRESP"] *= 1.0 + profile
         return arf
 
     def generate_unmodified_configuration(self, id: int, **parameters):
@@ -116,9 +135,9 @@ class GaussianARFLibrary(ModificationLibrary):
         Return the unperturbed configuration.
         """
         return {
-            "response": str(self.__assets__['base_rmf']),
-            "arf": str(self.__assets__['base_arf']),
-            "exposure": 50000
+            "response": str(self.__assets__["base_rmf"]),
+            "arf": str(self.__assets__["base_arf"]),
+            "exposure": 50000,
         }
 
     def generate_modified_configuration(self, id: int, **parameters):
@@ -133,9 +152,9 @@ class GaussianARFLibrary(ModificationLibrary):
             mod_arf = self._apply_gaussian_mod(mu, sigma, A)
             mod_arf.write(mod_path, format="fits")
         return {
-            "response": str(self.__assets__['base_rmf']),
+            "response": str(self.__assets__["base_rmf"]),
             "arf": str(mod_path),
-            "exposure": 50000
+            "exposure": 50000,
         }
 
     def generate_model_unmodified(self, T, **parameters):
@@ -143,13 +162,15 @@ class GaussianARFLibrary(ModificationLibrary):
         Construct XSPEC model for unmodified case.
         """
         model = xspec.Model("tbabs*apec")
-        model.setPars({
-            1: 0.1,   # nH
-            2: T,     # kT
-            3: 0.3,   # abundance
-            4: 0.05,  # redshift
-            5: 1.0    # norm
-        })
+        model.setPars(
+            {
+                1: 0.1,  # nH
+                2: T,  # kT
+                3: 0.3,  # abundance
+                4: 0.05,  # redshift
+                5: 1.0,  # norm
+            }
+        )
         return model
 
     def generate_model_modified(self, T, **parameters):
@@ -178,5 +199,6 @@ class GaussianARFLibrary(ModificationLibrary):
         xspec.Fit.perform()
         return float(xspec.AllModels(1)(2).values[0])
 
-if __name__ == 'main':
+
+if __name__ == "main":
     print("Hello")

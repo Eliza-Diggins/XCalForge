@@ -2,18 +2,18 @@
 
 **xrmodifier** is a framework for fitting temperature discrepancies between two X-ray telescopes by learning modifications to telescope calibration configurations, specifically the Ancillary Response File (ARF). The goal is to infer a global calibration correction that aligns posterior temperature estimates across instruments.
 
-1. [🧭 Problem Overview](#-problem-overview)  
-2. [🔧 Modification Model](#-modification-model)  
-   - [Gaussian ARF Modifier](#gaussian-arf-modifier)  
-3. [🧮 Computational Approach](#computational-approach)  
-   - [Step 1: Discretized Parameter Grid](#step-1-discretized-parameter-grid)  
-   - [Step 2: Forward Simulation and Likelihood Computation](#step-2-forward-simulation-and-likelihood-computation)  
-     - [a. Apply Calibration Modifier](#a-apply-calibration-modifier)  
-     - [b. Simulate and Fit Spectra](#b-simulate-and-fit-spectra)  
-   - [Step 3: Emulator Training](#step-3-emulator-training)  
-     - [📌 Objective](#-objective)  
-     - [🧠 Model: Feedforward Neural Network (MLP)](#-model-feedforward-neural-network-mlp)  
-       - [🛠 Architecture](#-architecture)  
+1. [🧭 Problem Overview](#-problem-overview)
+2. [🔧 Modification Model](#-modification-model)
+   - [Gaussian ARF Modifier](#gaussian-arf-modifier)
+3. [🧮 Computational Approach](#computational-approach)
+   - [Step 1: Discretized Parameter Grid](#step-1-discretized-parameter-grid)
+   - [Step 2: Forward Simulation and Likelihood Computation](#step-2-forward-simulation-and-likelihood-computation)
+     - [a. Apply Calibration Modifier](#a-apply-calibration-modifier)
+     - [b. Simulate and Fit Spectra](#b-simulate-and-fit-spectra)
+   - [Step 3: Emulator Training](#step-3-emulator-training)
+     - [📌 Objective](#-objective)
+     - [🧠 Model: Feedforward Neural Network (MLP)](#-model-feedforward-neural-network-mlp)
+       - [🛠 Architecture](#-architecture)
 
 ---
 
@@ -26,7 +26,7 @@ Consider $N$ observations of astronomical sources with fixed but unknown tempera
 
 From these configurations and data, we obtain posterior distributions:
 
-- $P(T_{0,i} \mid \Psi_0)$ — posterior from Telescope 0  
+- $P(T_{0,i} \mid \Psi_0)$ — posterior from Telescope 0
 - $P(T_{1,i} \mid \Psi_1)$ — posterior from Telescope 1
 
 Let us assume $\Psi_0$ and $\Psi_1$ are constant across observations (i.e., same ARF, RMF, etc. for each telescope across the dataset).
@@ -104,7 +104,7 @@ $$
 
 ### Step 2: Forward Simulation and Likelihood Computation
 
-The goal of the forward modeling step is to produce a discretization of the map 
+The goal of the forward modeling step is to produce a discretization of the map
 
 $$
 \mathcal{S}: \mathcal{F} \supset \Xi \mapsto T_{\rm mod}(T_{\rm unmod}|T_{\rm true})
@@ -129,12 +129,12 @@ Using XSPEC, simulate a synthetic spectrum for temperature $T_{\text{true}}$ and
 Then, fit this simulated spectrum using both the original and modified calibrations:
 
 - Fit under original calibration:
-  
+
   $$T_1 = \arg\max_T \mathcal{L}(D_\theta \mid T, \Psi_1)
   $$
 
 - Fit under modified calibration:
-  
+
   $$T_1' = \arg\max_T \mathcal{L}(D_\theta \mid T, \Psi_1')
   $$
 
@@ -174,4 +174,3 @@ We use a multilayer perceptron (MLP) to learn the mapping from $(\theta, T_{\tex
 - **Hidden Layers**: 2–3 fully connected layers (e.g., 64–128 units each) with ReLU or GELU activations
 - **Output**: scalar prediction of the best-fit $\theta^\star$.
 - **Loss Function**: Mean Squared Error (MSE)
-

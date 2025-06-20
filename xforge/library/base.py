@@ -4,14 +4,16 @@ Library generation base classes.
 These are the base classes for generating the modification libraries
 which are then used to train the interpolators.
 """
-from typing import Union, Dict, Sequence, Tuple, Any, List, Optional
-from pathlib import Path
-import numpy as np
-import h5py
-from abc import ABC, abstractmethod
 import logging
-from specforge.utils import ConfigManager, get_xspec
+from abc import ABC, abstractmethod
 from contextlib import contextmanager
+from pathlib import Path
+from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
+
+import h5py
+import numpy as np
+
+from xforge.utils import ConfigManager, get_mpi, get_xspec
 
 # Ensure access to XSPEC via PyXSPEC. This needs
 # to be done carefully because there can only be one CLI active
@@ -23,10 +25,11 @@ class ModificationLibrary(ABC):
     """
     Base class for loading and interacting with a pre-generated synthetic fitting library.
 
-    This class provides common logic for loading configuration, parameter space, and output 
-    data from a specified directory. It assumes the library has already been generated and 
+    This class provides common logic for loading configuration, parameter space, and output
+    data from a specified directory. It assumes the library has already been generated and
     contains a configuration file, parameter definitions, and combined results.
     """
+
     # ================================ #
     # CLASS FLAGS                      #
     # ================================ #
@@ -40,11 +43,7 @@ class ModificationLibrary(ABC):
     modification library class. If parameters are detected which do not
     exist in __PARAMETERS__, then an error is raised.
     """
-    __CONFIG__: Dict[str, Any] = {
-                                "logging.level": "INFO"
-                            }
-
-
+    __CONFIG__: Dict[str, Any] = {"logging.level": "INFO"}
 
     # ========================== #
     # Initialization             #
@@ -104,42 +103,49 @@ class ModificationLibrary(ABC):
         - Bin directory for persistent generated files (e.g., ARFs).
         - Combined output HDF5 file (must exist).
         - Configuration YAML file (must exist).
-        
+
         These paths are stored in `self.__assets__` for downstream use.
-        
+
         Raises
         ------
         FileNotFoundError
             If any required file or directory is missing (aside from cache/bin which will be created).
         """
-        self.__cachedir__   = self.__directory__ / "cache"
-        self.__bindir__     = self.__directory__ / "bin"
-        self.__logdir__     = self.__directory__ / "logs"
+        self.__cachedir__ = self.__directory__ / "cache"
+        self.__bindir__ = self.__directory__ / "bin"
+        self.__logdir__ = self.__directory__ / "logs"
         self.__configpath__ = self.__directory__ / "config.yaml"
-        self.__datapath__   = self.__directory__ / "library.h5"
+        self.__datapath__ = self.__directory__ / "library.h5"
 
         if not self.__configpath__.exists():
-            raise FileNotFoundError(f"Missing required config file: {self.__configpath__}")
+            raise FileNotFoundError(
+                f"Missing required config file: {self.__configpath__}"
+            )
         if not self.__datapath__.exists():
             raise FileNotFoundError(f"Missing required data file: {self.__datapath__}")
 
         self.__cachedir__.mkdir(parents=True, exist_ok=True)
         self.__bindir__.mkdir(parents=True, exist_ok=True)
-        self.__logdir__.mkdir(parents=True,exist_ok=True)
+        self.__logdir__.mkdir(parents=True, exist_ok=True)
 
-        self.__assets__.update({
-            "cache": self.__cachedir__,
-            "bin": self.__bindir__,
-            "log": self.__logdir__,
-            "config": self.__configpath__,
-            "data": self.__datapath__,
-        })
+        self.__assets__.update(
+            {
+                "cache": self.__cachedir__,
+                "bin": self.__bindir__,
+                "log": self.__logdir__,
+                "config": self.__configpath__,
+                "data": self.__datapath__,
+            }
+        )
 
     def __init_config__(self):
         """
         Loads the configuration file using the `ConfigManager` class.
         """
-        from specforge.utils import ConfigManager  # Local import to avoid cyclic dependency
+        from xforge.utils import (  # Local import to avoid cyclic dependency
+            ConfigManager,
+        )
+
         self.__config__ = ConfigManager(self.__configpath__)
 
     def __init_logger__(self):
@@ -150,14 +156,13 @@ class ModificationLibrary(ABC):
         # Obtain the name of the logger and load in
         # MPI to check what configuration system we're going
         # to be using.
-        from mpi4py import MPI
-        comm = MPI.COMM_WORLD
+        comm = get_mpi()
         rank = comm.Get_rank()
 
         logger_name = f"Library.{self.__directory__.name}"
 
         # Configure for parallelism
-        self.logger = logging.getLogger(logger_name+f".{rank}")
+        self.logger = logging.getLogger(logger_name + f".{rank}")
         self.logger.setLevel(self.config.get("logging.level", logging.DEBUG))
 
         # Avoid adding multiple handlers if already initialized
@@ -165,7 +170,9 @@ class ModificationLibrary(ABC):
             return
 
         # construct the formatter.
-        fmt = self.config.get("logging.fmt",f"%(asctime)s - %(levelname)s - %(message)s")
+        fmt = self.config.get(
+            "logging.fmt", "%(asctime)s - %(levelname)s - %(message)s"
+        )
         formatter = logging.Formatter(fmt)
 
         # Create the output log file.
@@ -194,35 +201,36 @@ class ModificationLibrary(ABC):
         # parameter arrays as well.
 
         with h5py.File(self.__datapath__, "r") as f:
-            # Check that we have a PARAMS group in the 
+            # Check that we have a PARAMS group in the
             # HDF5.
             if "PARAMS" not in f:
                 raise KeyError(f"'PARAMS' group not found in {self.__datapath__}")
-            
+
             param_group: h5py.Group = f["PARAMS"]
-            
+
             # Iterate through the keys and select only the
             # permissible parameters. Then ensure that all parameters
             # are present.
             self.__parameters__ = {}
             for key in param_group.keys():
-
                 # If the key is unknown, we raise a warning
                 # and then skip along.
                 if key not in self.__class__.__PARAMETERS__:
-                    self.logger.warning("Found key %s in `PARAMS`, which is not in __PARAMETERS__.",key)
+                    self.logger.warning(
+                        "Found key %s in `PARAMS`, which is not in __PARAMETERS__.", key
+                    )
                     continue
 
                 # If they key is known, they we extract the
                 # data and set it.
                 self.__parameters__[key] = param_group[key][...]
 
-        
         # Finally, ensure that all of the necessary parameters
         # are specified. If they are not, we raise an error.
         if any(i not in self.__parameters__ for i in self.__PARAMETERS__):
             raise ValueError("Missing parameters!")
 
+    @abstractmethod
     def __post_init__(self):
         pass
 
@@ -233,13 +241,15 @@ class ModificationLibrary(ABC):
     # can be created smoothly. These do not actually run the
     # library generation process.
     @classmethod
-    def create_library(cls,
-                    directory: Union[str, Path],
-                    parameters: Dict[str, Sequence],
-                    *args,
-                    overwrite: bool = False,
-                    config: Optional[Dict[str, Any]] = None,
-                    **kwargs):
+    def create_library(
+        cls,
+        directory: Union[str, Path],
+        parameters: Dict[str, Sequence],
+        *args,
+        overwrite: bool = False,
+        config: Optional[Dict[str, Any]] = None,
+        **kwargs,
+    ):
         """
         Create a new library directory with required structure and parameter file.
 
@@ -249,7 +259,7 @@ class ModificationLibrary(ABC):
             Path to the root of the new library. If the directory already exists,
             the behavior is dictated by the `overwrite` parameter.
         parameters : dict[str, Sequence]
-            Parameter grid as a dictionary of 1D arrays/lists for each axis. These must 
+            Parameter grid as a dictionary of 1D arrays/lists for each axis. These must
             match the class's allowed parameters.
         overwrite : bool
             Whether to overwrite an existing directory. If False and directory exists, an error is raised.
@@ -266,8 +276,11 @@ class ModificationLibrary(ABC):
         # Handle overwrite logic
         if directory.exists():
             if not overwrite:
-                raise ValueError(f"Directory `{directory}` already exists. Use `overwrite=True` to recreate.")
+                raise ValueError(
+                    f"Directory `{directory}` already exists. Use `overwrite=True` to recreate."
+                )
             import shutil
+
             shutil.rmtree(directory)
 
         # Create necessary folders
@@ -315,13 +328,15 @@ class ModificationLibrary(ABC):
 
             for key, values in parameters.items():
                 if key not in cls.__PARAMETERS__:
-                    raise ValueError(f"Invalid parameter key `{key}`. Allowed: {cls.__PARAMETERS__}")
+                    raise ValueError(
+                        f"Invalid parameter key `{key}`. Allowed: {cls.__PARAMETERS__}"
+                    )
                 param_group.create_dataset(key, data=np.array(values))
 
     @classmethod
-    def __write_config__(cls,
-                        directory: Union[str, Path],
-                        config: Optional[Dict[str, Any]] = None):
+    def __write_config__(
+        cls, directory: Union[str, Path], config: Optional[Dict[str, Any]] = None
+    ):
         """
         Write the config.yaml file using a ConfigManager.
 
@@ -334,7 +349,8 @@ class ModificationLibrary(ABC):
         config : dict, optional
             Optional dictionary of configuration values. May contain dotted or nested keys.
         """
-        from specforge.utils import ConfigManager
+        from xforge.utils import ConfigManager
+
         config_path = Path(directory) / "config.yaml"
         cfg = ConfigManager(config_path, autosave=True)
 
@@ -372,7 +388,7 @@ class ModificationLibrary(ABC):
             Dictionary of parameter arrays (1D), as stored in the 'PARAMS' HDF5 group.
         """
         return self.__parameters__
-    
+
     @property
     def size(self) -> int:
         """
@@ -381,15 +397,15 @@ class ModificationLibrary(ABC):
         Returns
         -------
         int
-            The product of the lengths of all parameter value lists, representing the 
+            The product of the lengths of all parameter value lists, representing the
             total number of points in the parameter lattice to be explored.
         """
         return int(np.prod([len(pv) for pk, pv in self.__parameters__.items()]))
 
     @property
     def shape(self) -> tuple:
-        return tuple(len(pv) for _,pv in self.__parameters__.items())
-    
+        return tuple(len(pv) for _, pv in self.__parameters__.items())
+
     @property
     def is_generated(self) -> bool:
         """
@@ -421,7 +437,7 @@ class ModificationLibrary(ABC):
             return f["LIBRARY"]["temps"][...]
 
     @contextmanager
-    def library(self,mode='r'):
+    def library(self, mode="r"):
         """
         Context manager for lazy access to the generated library results.
 
@@ -436,12 +452,13 @@ class ModificationLibrary(ABC):
             If the library has not been generated.
         """
         if not self.is_generated:
-            raise RuntimeError("This library has not been generated. No results available.")
+            raise RuntimeError(
+                "This library has not been generated. No results available."
+            )
 
         with h5py.File(self.__assets__["data"], mode) as f:
             lib_group = f["LIBRARY"]
             yield lib_group["results"], lib_group["temps"]
-
 
     # ================================ #
     # Library Generation               #
@@ -469,7 +486,7 @@ class ModificationLibrary(ABC):
         ...
 
     @abstractmethod
-    def generate_modified_configuration(self,id: int, **parameters) -> dict:
+    def generate_modified_configuration(self, id: int, **parameters) -> dict:
         """
         Generate the configuration dictionary for the modified system.
 
@@ -489,7 +506,7 @@ class ModificationLibrary(ABC):
             Configuration dictionary for the modified system.
         """
         ...
-    
+
     @abstractmethod
     def generate_model_unmodified(self, T, **parameters):
         """
@@ -589,19 +606,19 @@ class ModificationLibrary(ABC):
         starts = np.cumsum([0] + chunk_sizes[:-1])
         stops = np.cumsum(chunk_sizes)
 
-        self.logger.debug("Assigned process %s to %s parameters from %s to %s.",
-                          mpi_rank,
-                          stops[mpi_rank]-starts[mpi_rank],
-                          starts[mpi_rank],
-                          stops[mpi_rank])
+        self.logger.debug(
+            "Assigned process %s to %s parameters from %s to %s.",
+            mpi_rank,
+            stops[mpi_rank] - starts[mpi_rank],
+            starts[mpi_rank],
+            stops[mpi_rank],
+        )
 
         return int(starts[mpi_rank]), int(stops[mpi_rank])
-    
-    def create_rank_output_file(self,
-                                start:int,
-                                stop:int,
-                                temperatures: Sequence[float],
-                                mpi_rank) -> Path:
+
+    def create_rank_output_file(
+        self, start: int, stop: int, temperatures: Sequence[float], mpi_rank
+    ) -> Path:
         """
         Create an HDF5 output file for this MPI rank to store fitting results.
 
@@ -638,32 +655,26 @@ class ModificationLibrary(ABC):
         # Now build the dataset. To do so, we open the
         # HDF5 file and insert a dataset in the main directory
         # containing the data.
-        self.logger.info("Building output file: %s.",filepath)
-        with h5py.File(filepath,'w') as fio:
-            
+        self.logger.info("Building output file: %s.", filepath)
+        with h5py.File(filepath, "w") as fio:
             # Determine how many temperature samples
             # we're taking in order to build the array.
             Ntemp = len(temperatures)
-            shape = (stop-start,Ntemp,3)
+            shape = (stop - start, Ntemp, 3)
 
             # Now create the dataset.
-            fio.create_dataset(
-            "results",
-            shape=shape,
-            dtype="f8",
-            compression="gzip"
-        )
-            
+            fio.create_dataset("results", shape=shape, dtype="f8", compression="gzip")
+
             # Add some additional metadata flags.
             fio.attrs["rank"] = mpi_rank
             fio.attrs["start_index"] = start
             fio.attrs["stop_index"] = stop
             fio.attrs["temperature_count"] = Ntemp
-            fio.attrs["parameter_count"] = stop-start
+            fio.attrs["parameter_count"] = stop - start
 
         return filepath
-    
-    def build_synthetic_data(self,idx :int, tidx: int, T, config, **parameters):
+
+    def build_synthetic_data(self, idx: int, tidx: int, T, config, **parameters):
         """
         Generate synthetic photon data for a given parameter combination and temperature.
 
@@ -698,31 +709,38 @@ class ModificationLibrary(ABC):
         # Clear all existing XSPEC states
         xspec.AllModels.clear()
         xspec.AllData.clear()
-        
-        # Construct the model and set it as the 
-        mod_model = self.generate_model_modified( T, **parameters)
+
+        # Construct the model and set it as the
+        _ = self.generate_model_modified(T, **parameters)
 
         # Generate synthetic spectrum using mod_config and mod_model
         synth_dir = self.__cachedir__ / "synth"
-        synth_dir.mkdir(parents=True,exist_ok=True)
+        synth_dir.mkdir(parents=True, exist_ok=True)
         synth_path = synth_dir / f"synth_{idx}_{tidx}.pha"
         xspec.AllData.clear()
-        fakeit = xspec.FakeitSettings(response=config["response"],
-                                arf=config["arf"],
-                                exposure=config.get("exposure", 50_000),
-                                background=config.get("background", ""),
-                                correction=config.get("correction", ""),
-                                backExposure=config.get("backExposure", ""),
-                                fileName=str(synth_path))
-        
+        fakeit = xspec.FakeitSettings(
+            response=config["response"],
+            arf=config["arf"],
+            exposure=config.get("exposure", 50_000),
+            background=config.get("background", ""),
+            correction=config.get("correction", ""),
+            backExposure=config.get("backExposure", ""),
+            fileName=str(synth_path),
+        )
+
         # Clear existing spectra to avoid collisions
         xspec.AllData.fakeit(1, [fakeit])
 
-        logging.info("Created synthetic data (%s,%s) with parameters %s.",idx,tidx,str(parameters))
+        logging.info(
+            "Created synthetic data (%s,%s) with parameters %s.",
+            idx,
+            tidx,
+            str(parameters),
+        )
 
         # Return the generated synthetic datasets
         return xspec.AllData(1)
-    
+
     def _finalize_library(self, temperatures: Sequence[float], mpisize: int):
         """
         Finalize the generation of the synthetic library by merging results
@@ -766,17 +784,18 @@ class ModificationLibrary(ABC):
                 if "LIBRARY" in f:
                     del f["LIBRARY"]
                 lib_group = f.create_group("LIBRARY")
-                lib_group.create_dataset("temps", data=np.array(temperatures), dtype="f8")
+                lib_group.create_dataset(
+                    "temps", data=np.array(temperatures), dtype="f8"
+                )
 
                 result_ds = lib_group.create_dataset(
-                    "results",
-                    shape=reshaped.shape,
-                    dtype="f8",
-                    compression="gzip"
+                    "results", shape=reshaped.shape, dtype="f8", compression="gzip"
                 )
 
                 # Write each chunk block-by-block to avoid memory overuse
-                for block, slices in zip(reshaped.to_delayed().flatten(), slices_from_chunks(reshaped.chunks)):
+                for block, slices in zip(
+                    reshaped.to_delayed().flatten(), slices_from_chunks(reshaped.chunks)
+                ):
                     result_ds[slices] = compute(block)[0]
 
             self.logger.info("Library written to: %s", self.__datapath__)
@@ -795,9 +814,7 @@ class ModificationLibrary(ABC):
 
         self.logger.info("Library finalization complete.")
 
-
-
-    def generate_library(self, temperatures,clear_cache: bool = True):
+    def generate_library(self, temperatures, clear_cache: bool = True):
         """
         Runs the generation and fitting loop for this MPI rank. For each assigned
         parameter set and temperature, it creates synthetic data, performs both unmodified
@@ -810,56 +827,64 @@ class ModificationLibrary(ABC):
         """
         # @@ Configure the run @@ #
         # On this processor, we're going to configure the run by
-        # determining the relevant start and stop indices and 
+        # determining the relevant start and stop indices and
         # creating the data file. This requires realizing the MPI configuration.
-        from mpi4py import MPI
-
-        # Load the MPI variables so that we can determine
-        # the context of the run.
-        _mpicomm = MPI.COMM_WORLD
+        _mpicomm = get_mpi()
         _mpirank = _mpicomm.Get_rank()
         _mpisize = _mpicomm.Get_size()
 
         # Determine range of parameter indices for this rank
-        pstart_idx, pstop_idx = self.assign_mpi_load(_mpisize,_mpirank)
+        pstart_idx, pstop_idx = self.assign_mpi_load(_mpisize, _mpirank)
 
         # Open output file and get write handle
-        data_file = self.create_rank_output_file(pstart_idx, pstop_idx, temperatures, _mpirank)
+        data_file = self.create_rank_output_file(
+            pstart_idx, pstop_idx, temperatures, _mpirank
+        )
 
-        with h5py.File(data_file,'a') as df:
-
+        with h5py.File(data_file, "a") as df:
             # @@ Iterate through run @@ #
             # We now iterate through the run of indices and
             # perform the analysis at each index.
             for lidx, gidx in enumerate(range(pstart_idx, pstop_idx)):
-                self.logger.debug("Start iteration (%s,%s).",lidx,gidx)
+                self.logger.debug("Start iteration (%s,%s).", lidx, gidx)
                 # Construct the N-dim index from the gidx so that we can access
                 # the parameter dictionary given our position in the workload.
                 midx = np.unravel_index(gidx, self.shape)
-                iteration_parameters = {paramkey: paramvalue[midx[param_idx]] for param_idx, (paramkey,paramvalue) in enumerate(self.__parameters__.items())}
+                iteration_parameters = {
+                    paramkey: paramvalue[midx[param_idx]]
+                    for param_idx, (paramkey, paramvalue) in enumerate(
+                        self.__parameters__.items()
+                    )
+                }
 
                 # Generate the configurations for this parameter set. These
                 # are going to be used during the fitting procedure.
-                mod_config = self.generate_modified_configuration(gidx, **iteration_parameters)
-                unmod_config = self.generate_unmodified_configuration(gidx, **iteration_parameters)
+                mod_config = self.generate_modified_configuration(
+                    gidx, **iteration_parameters
+                )
+                unmod_config = self.generate_unmodified_configuration(
+                    gidx, **iteration_parameters
+                )
 
                 # @@ Enter Temperature Loop @@ #
                 # Now for each of the library parameter values, we iterate over all
                 # of the temperatures in order to sample the parameter space.
                 for tid, T in enumerate(temperatures):
-                    self.logger.debug("Start temperature iteration %s.",tid)
+                    self.logger.debug("Start temperature iteration %s.", tid)
                     # Build the modified model so that we can use it
                     # to create the synthetic data.
                     _ = self.generate_model_modified(T, **iteration_parameters)
 
                     # Build the synthetic data.
-                    self.build_synthetic_data(gidx,tid, T, mod_config, **iteration_parameters)
+                    self.build_synthetic_data(
+                        gidx, tid, T, mod_config, **iteration_parameters
+                    )
 
                     # Fit using unmodified model
                     mod_result = self.fit_modified(mod_config)
 
                     # Clear the model and rebuild with the
-                    # unmodified 
+                    # unmodified
                     xspec.AllModels.clear()
                     _ = self.generate_model_unmodified(T, **iteration_parameters)
 
@@ -870,24 +895,32 @@ class ModificationLibrary(ABC):
                     # mod_result = self.fit_modified()
 
                     # Store result
-                    df['results'][lidx, tid,0] = unmod_result  # or mod_result, depending on target
+                    df["results"][
+                        lidx, tid, 0
+                    ] = unmod_result  # or mod_result, depending on target
 
-                    self.logger.info("Iteration (%s,%s,%s) -- T_mod=%s, T_unmod=%s, T_True=%s",
-                                    lidx,gidx,tid,mod_result,unmod_result,T)
+                    self.logger.info(
+                        "Iteration (%s,%s,%s) -- T_mod=%s, T_unmod=%s, T_True=%s",
+                        lidx,
+                        gidx,
+                        tid,
+                        mod_result,
+                        unmod_result,
+                        T,
+                    )
 
-                    self.logger.debug("Start temperature iteration %s. [DONE]",tid)
+                    self.logger.debug("Start temperature iteration %s. [DONE]", tid)
 
-                self.logger.debug("Start iteration (%s,%s). [DONE]",lidx,gidx)
+                self.logger.debug("Start iteration (%s,%s). [DONE]", lidx, gidx)
 
         # We now exit except for the RANK-0 process, which will complete by
-        # combining the relevant data files and cleaning up the environment. 
+        # combining the relevant data files and cleaning up the environment.
         if _mpirank == 0:
             try:
-                self._finalize_library(temperatures,_mpisize)
+                self._finalize_library(temperatures, _mpisize)
             finally:
                 if clear_cache:
                     import shutil
-                    shutil.rmtree(self.__assets__['cache'])
-                    self.__assets__['cache'].mkdir(parents=True,exist_ok=True)
 
-
+                    shutil.rmtree(self.__assets__["cache"])
+                    self.__assets__["cache"].mkdir(parents=True, exist_ok=True)

@@ -1,0 +1,600 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Theory &#8212; XCalForge  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/theory';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Installation" href="install.html" />
+    <link rel="prev" title="XCalForge Reference" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">XCalForge  documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    XCalForge Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    XCalForge Reference
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><p aria-level="2" class="caption" role="heading"><span class="caption-text">Theory and Background</span></p>
+<ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">Theory</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Theory and Background</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="install.html">Installation</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">XCalForge Reference</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Theory</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="theory">
+<h1>Theory<a class="headerlink" href="#theory" title="Link to this heading">#</a></h1>
+<p>xrmodifier is a framework for fitting temperature discrepancies between two X-ray telescopes by learning modifications to telescope calibration configurations, specifically the Ancillary Response File (ARF). The goal is to infer a global calibration correction that aligns posterior temperature estimates across instruments.</p>
+<p>Contents:</p>
+<ol class="arabic">
+<li><p>Problem <a href="#id1"><span class="problematic" id="id2">Overview_</span></a></p></li>
+<li><p>Modification <a href="#id3"><span class="problematic" id="id4">Model_</span></a>
+- Gaussian ARF <a href="#id5"><span class="problematic" id="id6">Modifier_</span></a></p></li>
+<li><p>Computational <a href="#id7"><span class="problematic" id="id8">Approach_</span></a>
+- Step 1: Discretized Parameter <a href="#id9"><span class="problematic" id="id10">Grid_</span></a>
+- Step 2: Forward Simulation and Likelihood <a href="#id11"><span class="problematic" id="id12">Computation_</span></a></p>
+<blockquote>
+<div><ul class="simple">
+<li><ol class="loweralpha simple">
+<li><p>Apply Calibration <a href="#id13"><span class="problematic" id="id14">Modifier_</span></a></p></li>
+</ol>
+</li>
+<li><ol class="loweralpha simple" start="2">
+<li><p>Simulate and Fit <a href="#id15"><span class="problematic" id="id16">Spectra_</span></a></p></li>
+</ol>
+</li>
+</ul>
+</div></blockquote>
+<ul class="simple">
+<li><p>Step 3: Emulator <a href="#id17"><span class="problematic" id="id18">Training_</span></a>
+- <a class="reference internal" href="#objective">Objective</a>
+- Model: Feedforward Neural Network (MLP)_</p></li>
+</ul>
+</li>
+</ol>
+<section id="problem-overview">
+<h2>Problem Overview<a class="headerlink" href="#problem-overview" title="Link to this heading">#</a></h2>
+<p>Consider <span class="math notranslate nohighlight">\(N\)</span> observations of astronomical sources with fixed but unknown temperatures <span class="math notranslate nohighlight">\(T_i\)</span>, each observed by <strong>two telescopes</strong>:</p>
+<ul class="simple">
+<li><p>Telescope 0 (trusted): fixed configuration <span class="math notranslate nohighlight">\(\Psi_0\)</span></p></li>
+<li><p>Telescope 1 (biased): fixed configuration <span class="math notranslate nohighlight">\(\Psi_1\)</span></p></li>
+</ul>
+<p>From these configurations and data, we obtain posterior distributions:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(P(T_{0,i} \mid \Psi_0)\)</span> — posterior from Telescope 0</p></li>
+<li><p><span class="math notranslate nohighlight">\(P(T_{1,i} \mid \Psi_1)\)</span> — posterior from Telescope 1</p></li>
+</ul>
+<p>Assume <span class="math notranslate nohighlight">\(\Psi_0\)</span> and <span class="math notranslate nohighlight">\(\Psi_1\)</span> are constant across observations (i.e., same ARF, RMF, etc.).</p>
+<p>We aim to find a <strong>global modification</strong> <span class="math notranslate nohighlight">\(\phi \in \mathcal{F}\)</span> that adjusts Telescope 1’s configuration:</p>
+<div class="math notranslate nohighlight">
+\[\Psi_1' = \phi(\Psi_1)\]</div>
+<p>such that the modified Telescope 1 matches the Telescope 0 posteriors:</p>
+<div class="math notranslate nohighlight">
+\[\Psi_1^* = \arg\min_{\phi \in \mathcal{F}} \sum_{i=1}^N \mathcal{D}\left[ P(T_{0,i} \mid \Psi_0), \, P(T_{1,i} \mid \phi(\Psi_1)) \right]\]</div>
+<p>where <span class="math notranslate nohighlight">\(\mathcal{D}\)</span> is a distance between distributions (e.g., KL divergence, Wasserstein, or squared difference in means).</p>
+<p>If each telescope returns Gaussian posteriors or point estimates, this reduces to:</p>
+<div class="math notranslate nohighlight">
+\[\mathcal{L}(\theta) = \sum_{i=1}^N \left[ T_{0,i} - T_{1,i}'(\theta) \right]^2\]</div>
+<p>where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(T_{0,i}\)</span>: trusted temperature from Telescope 0</p></li>
+<li><p><span class="math notranslate nohighlight">\(T_{1,i}'(\theta)\)</span>: modified temperature from Telescope 1</p></li>
+<li><p><span class="math notranslate nohighlight">\(\theta\)</span>: parameters of the calibration modification</p></li>
+</ul>
+</section>
+<section id="modification-model">
+<h2>Modification Model<a class="headerlink" href="#modification-model" title="Link to this heading">#</a></h2>
+<p>We assume a parametric family <span class="math notranslate nohighlight">\(\mathcal{F}\)</span> of calibration modifiers.</p>
+<section id="gaussian-arf-modifier">
+<h3>Gaussian ARF Modifier<a class="headerlink" href="#gaussian-arf-modifier" title="Link to this heading">#</a></h3>
+<div class="math notranslate nohighlight">
+\[\phi_\theta(\Psi_1)(E) = \Psi_1(E) \cdot \left[ 1 + A \cdot \exp\left(-\frac{(E - \mu)^2}{2\sigma^2} \right) \right]\]</div>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\theta = (\mu, \sigma, A)\)</span> are learned by optimization.</p></li>
+</ul>
+</section>
+</section>
+<section id="computational-approach">
+<h2>Computational Approach<a class="headerlink" href="#computational-approach" title="Link to this heading">#</a></h2>
+<p>We build a surrogate model to efficiently evaluate calibration corrections.</p>
+<section id="step-1-discretized-parameter-grid">
+<h3>Step 1: Discretized Parameter Grid<a class="headerlink" href="#step-1-discretized-parameter-grid" title="Link to this heading">#</a></h3>
+<p>Let <span class="math notranslate nohighlight">\(\theta = (\alpha_1, \alpha_2, \ldots, \alpha_d)\)</span> parametrize the calibration modifier.</p>
+<p>Discretize each parameter into <span class="math notranslate nohighlight">\(N_i\)</span> values. Let:</p>
+<div class="math notranslate nohighlight">
+\[\mathcal{T} = \{T_1, T_2, \ldots, T_{N_T} \}\]</div>
+<p>Then the simulation grid is:</p>
+<div class="math notranslate nohighlight">
+\[\mathcal{G} \times \mathcal{T} = \{ (\theta, T_{\text{true}}) \}\]</div>
+<p>with total size:</p>
+<div class="math notranslate nohighlight">
+\[|\mathcal{G} \times \mathcal{T}| = \left( \prod_{i=1}^d N_i \right) \cdot N_T\]</div>
+</section>
+<section id="step-2-forward-simulation-and-likelihood-computation">
+<h3>Step 2: Forward Simulation and Likelihood Computation<a class="headerlink" href="#step-2-forward-simulation-and-likelihood-computation" title="Link to this heading">#</a></h3>
+<p>We simulate:</p>
+<div class="math notranslate nohighlight">
+\[\mathcal{S}: \mathcal{F} \supset \Xi \mapsto T_{\rm mod}(T_{\rm unmod}|T_{\rm true})\]</div>
+<p>An XSPEC model <span class="math notranslate nohighlight">\(M\)</span> is used as a hyperparameter.</p>
+<section id="a-apply-calibration-modifier">
+<h4>a. Apply Calibration Modifier<a class="headerlink" href="#a-apply-calibration-modifier" title="Link to this heading">#</a></h4>
+<p>Compute:</p>
+<div class="math notranslate nohighlight">
+\[\Psi_1' = \phi_\theta(\Psi_1)\]</div>
+<p>This is a new ARF calibration file used for XSPEC.</p>
+</section>
+<section id="b-simulate-and-fit-spectra">
+<h4>b. Simulate and Fit Spectra<a class="headerlink" href="#b-simulate-and-fit-spectra" title="Link to this heading">#</a></h4>
+<p>Simulate synthetic spectrum at <span class="math notranslate nohighlight">\(T_{\text{true}}\)</span>, then fit using both original and modified calibration:</p>
+<p>Original fit:</p>
+<div class="math notranslate nohighlight">
+\[T_1 = \arg\max_T \mathcal{L}(D_\theta \mid T, \Psi_1)\]</div>
+<p>Modified fit:</p>
+<div class="math notranslate nohighlight">
+\[T_1' = \arg\max_T \mathcal{L}(D_\theta \mid T, \Psi_1')\]</div>
+<p>Store <span class="math notranslate nohighlight">\(T_1\)</span>, <span class="math notranslate nohighlight">\(T_1'\)</span>, and likelihood curves.</p>
+</section>
+</section>
+<section id="step-3-emulator-training">
+<h3>Step 3: Emulator Training<a class="headerlink" href="#step-3-emulator-training" title="Link to this heading">#</a></h3>
+<p>We train a neural network to emulate the calibration effect.</p>
+<section id="objective">
+<h4>Objective<a class="headerlink" href="#objective" title="Link to this heading">#</a></h4>
+<p>Learn a function:</p>
+<div class="math notranslate nohighlight">
+\[f_{\text{emulator}}(\theta, T_{\text{true}}) \approx T_1'(\theta; T_{\text{true}})\]</div>
+<p>where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\theta \in \mathbb{R}^d\)</span>: modifier parameters</p></li>
+<li><p><span class="math notranslate nohighlight">\(T_{\text{true}} \in \mathbb{R}\)</span>: true input temperature</p></li>
+<li><p><span class="math notranslate nohighlight">\(T_1'\)</span>: modified fitted temperature</p></li>
+</ul>
+</section>
+<section id="model-feedforward-neural-network-mlp">
+<h4>Model: Feedforward Neural Network (MLP)<a class="headerlink" href="#model-feedforward-neural-network-mlp" title="Link to this heading">#</a></h4>
+<ul class="simple">
+<li><p><strong>Input</strong>: <span class="math notranslate nohighlight">\((\theta, T_{\text{true}}) \in \mathbb{R}^{d+1}\)</span></p></li>
+<li><p><strong>Hidden</strong>: 2–3 fully connected layers (64–128 units, ReLU or GELU)</p></li>
+<li><p><strong>Output</strong>: scalar prediction <span class="math notranslate nohighlight">\(T_1'\)</span></p></li>
+<li><p><strong>Loss</strong>: Mean Squared Error (MSE)</p></li>
+</ul>
+</section>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">XCalForge Reference</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="install.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Installation</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#problem-overview">Problem Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#modification-model">Modification Model</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#gaussian-arf-modifier">Gaussian ARF Modifier</a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#computational-approach">Computational Approach</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-1-discretized-parameter-grid">Step 1: Discretized Parameter Grid</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-2-forward-simulation-and-likelihood-computation">Step 2: Forward Simulation and Likelihood Computation</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#a-apply-calibration-modifier">a. Apply Calibration Modifier</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#b-simulate-and-fit-spectra">b. Simulate and Fit Spectra</a></li>
+</ul>
+</li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#step-3-emulator-training">Step 3: Emulator Training</a><ul class="nav section-nav flex-column">
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#objective">Objective</a></li>
+<li class="toc-h4 nav-item toc-entry"><a class="reference internal nav-link" href="#model-feedforward-neural-network-mlp">Model: Feedforward Neural Network (MLP)</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/reference/theory.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Eliza Diggins.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

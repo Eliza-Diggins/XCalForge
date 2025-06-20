@@ -9,4 +9,3 @@ API
     :template: module.rst
 
     library
-s

@@ -18,7 +18,7 @@ Contents
 .. toctree::
    :maxdepth: 1
 
-   api_base
+   api
    reference/index
 
 Indices and Tables

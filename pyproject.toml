@@ -16,7 +16,7 @@ build-backend = "setuptools.build_meta"
 # ================================== #
 # Configuration for the project details.
 [project]
-name = "specforge"
+name = "XCalForge"
 dynamic = ["version"]
 description = "X-Ray telescope cross calibration correction simulator."
 authors = [
@@ -34,6 +34,7 @@ dependencies = [
   "numpy>=1.22",
   "h5py>=3.0",
   "dask",
+  "astropy"
 ]
 
 # ================================== #
@@ -69,11 +70,11 @@ docs = [
 # Tools                              #
 # ================================== #
 [tool.setuptools]
-packages = { find = { include = ["specforge*"] } }
+packages = { find = { include = ["xforge*"] } }
 include-package-data = true
 
 [tool.setuptools_scm]
-version_file = "specforge/_version.py"
+version_file = "xforge/_version.py"
 local_scheme = "no-local-version"
 fallback_version = "0.0.0"
 

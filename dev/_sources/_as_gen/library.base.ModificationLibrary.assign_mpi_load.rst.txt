@@ -1,6 +1,0 @@
-library.base.ModificationLibrary.assign\_mpi\_load
-==================================================
-
-.. currentmodule:: library.base
-
-.. automethod:: ModificationLibrary.assign_mpi_load

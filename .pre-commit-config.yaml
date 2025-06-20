@@ -9,19 +9,19 @@ repos:
     rev: v4.5.0
     hooks:
     -   id: trailing-whitespace
-        stages: [commit]
+        stages: [pre-commit]
     -   id: end-of-file-fixer
-        stages: [commit]
+        stages: [pre-commit]
     -   id: check-yaml
         args: ["--unsafe"]
-        stages: [commit]
+        stages: [pre-commit]
     -   id: check-added-large-files
         args: ["--maxkb=2000"]
 -   repo: https://github.com/psf/black
     rev: 23.12.1
     hooks:
     - id: black-jupyter
-      stages: [commit]
+      stages: [pre-commit]
 
 -   repo: https://github.com/PyCQA/isort
     rev: 5.13.2
@@ -29,11 +29,11 @@ repos:
     - id: isort
       name: isort (python)
       args: ["--profile", "black"]
-      stages: [commit]
+      stages: [pre-commit]
     - id: isort
       name: isort (cython)
       types: [cython]
-      stages: [commit]
+      stages: [pre-commit]
 -   repo: https://github.com/PyCQA/flake8
     rev: 7.2.0
     hooks:

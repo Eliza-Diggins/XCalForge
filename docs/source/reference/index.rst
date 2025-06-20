@@ -28,6 +28,13 @@ Installation
 
 Instructions for setting up the environment, dependencies, and preparing your system (e.g., HPC environments, XSPEC, MPI).
 
+.. toctree::
+   :titlesonly:
+   :caption: Theory and Background
+   :maxdepth: 1
+
+   install.rst
+
 Library Generation
 ~~~~~~~~~~~~~~~~~~
 

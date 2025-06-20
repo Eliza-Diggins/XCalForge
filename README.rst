@@ -1,11 +1,18 @@
 XCalForge
 ===============
 
-|isort| |black| |Pre-Commit| |docformatter| |NUMPSTYLE| |Commits| |CONTRIBUTORS| |docs|
++-------------------+----------------------------------------------------------+
+| **Code**          | |black| |isort| |Pre-Commit| |Xenon|                     |
++-------------------+----------------------------------------------------------+
+| **Documentation** | |docs| |NUMPSTYLE| |docformatter|                        |
++-------------------+----------------------------------------------------------+
+| **GitHub**        | |Contributors| |Commits| |Tests|                         |
++-------------------+----------------------------------------------------------+
+| **PyPi**          |                                                          |
++-------------------+----------------------------------------------------------+
 
-.. raw:: html
-
-   <hr style="height:2px;background-color:black">
+Overview
+--------
 
 **XCalForge** is a research-oriented framework for analyzing and correcting calibration discrepancies
  between X-ray telescopes through simulation-driven modeling and machine learning.
@@ -22,31 +29,6 @@ The system is optimized for use on HPC environments and supports MPI-parallel li
 
 Whether you're correcting for ARF biases or validating temperature consistency across missions, **XCalForge** provides a principled and
 extensible toolkit for tackling instrument cross-calibration challenges in X-ray astronomy.
-
-
-Contents
---------
-
-.. raw:: html
-
-   <hr style="height:10px;background-color:black">
-
-.. toctree::
-   :maxdepth: 1
-
-   api
-   reference/index
-
-Indices and Tables
-------------------
-
-.. raw:: html
-
-   <hr style="height:10px;background-color:black">
-
-* :ref:`genindex` – General index of all documented terms
-* :ref:`modindex` – Python module index
-* :ref:`search` – Search the documentation
 
 
 .. |docs| image:: https://img.shields.io/badge/docs-latest-brightgreen

@@ -1,0 +1,6 @@
+library.arf\_mod.GaussianARFLibrary.assign\_mpi\_load
+=====================================================
+
+.. currentmodule:: library.arf_mod
+
+.. automethod:: GaussianARFLibrary.assign_mpi_load

@@ -27,6 +27,8 @@ class GaussianARFLibrary(ModificationLibrary):
         "logging.level": "INFO",
         "input.arf": "base.arf",
         "input.rmf": "base.rmf",
+        "error.threshold": 1,
+        "error.parameter": 2,
     }
 
     # ========================== #
@@ -187,18 +189,22 @@ class GaussianARFLibrary(ModificationLibrary):
         xspec.AllData(1).response.arf = config["arf"]
         xspec.AllModels(1).setPars({2: "1.0"})
         xspec.Fit.perform()
-        return float(xspec.AllModels(1)(2).values[0])
+        xspec.Fit.error(f"{self.config['error.threshold']} 2")
+
+        val = float(xspec.AllModels(1)(2).values[0])
+        lo, hi, status = xspec.AllModels(1)(2).error  # Negative direction
+
+        if status != "FFFFFFFFF":
+            self.logger.warning(
+                f"Error computation for parameter index 2 had not standard status: {status}."
+            )
+
+        return (lo, val, hi)
 
     def fit_modified(self, config, **parameters):
         """
         Perform fit with modified configuration.
         """
-        xspec.AllData(1).response = config["response"]
-        xspec.AllData(1).response.arf = config["arf"]
-        xspec.AllModels(1).setPars({2: "1.0"})
-        xspec.Fit.perform()
-        return float(xspec.AllModels(1)(2).values[0])
-
-
-if __name__ == "main":
-    print("Hello")
+        # Just pass through the same fit cycle as the unmod case,
+        # but with the different config.
+        return self.fit_unmodified(config, **parameters)

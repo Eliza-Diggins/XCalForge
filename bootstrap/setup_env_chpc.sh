@@ -12,7 +12,7 @@ set -e
 # Configuration
 # ----------------------------
 PYTHON="python"
-MPI_MODULE="openmpi/4.1.3"
+MPI_MODULE="openmpi/4.1.6"
 HEASOFT_MODULE="heasoft/6.31.1"
 
 echo "[SpecForge]: Loading CHPC modules..."

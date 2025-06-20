@@ -27,7 +27,7 @@ set -e # ENSURE HARD FAILURES (any error kills install.)
 # IMPORTANT: Please ensure that these are correct for your
 # use case and environement configuration.
 PYTHON="python"
-MPI_MODULE="openmpi/4.1.3"
+MPI_MODULE="openmpi/4.1.6"
 HEASOFT_MODULE="heasoft/6.31.1"
 
 
@@ -67,5 +67,5 @@ echo "[Specforge]: Verifying xspec and mpi4py availability... "
 python -c 'import xspec; import mpi4py.MPI; print("MPI and XSPEC successfully loaded")'
 
 echo "[Specforge]: Installing specforge..."
-pip install . --no-build-isolation
+pip install -e .
 echo "[Specforge]: Installed specforge."

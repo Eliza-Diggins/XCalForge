@@ -552,7 +552,7 @@ class ModificationLibrary(ABC):
         ...
 
     @abstractmethod
-    def fit_unmodified(self, config, **parameters) -> float:
+    def fit_unmodified(self, config, **parameters) -> Tuple[float, float, float]:
         """
         Perform fitting on the synthetic data using the unmodified configuration.
 
@@ -574,7 +574,7 @@ class ModificationLibrary(ABC):
         ...
 
     @abstractmethod
-    def fit_modified(self, config, **parameters) -> float:
+    def fit_modified(self, config, **parameters) -> Tuple[float, float, float]:
         ...
 
     # -- Tooling -- #
@@ -896,7 +896,7 @@ class ModificationLibrary(ABC):
 
                     # Store result
                     df["results"][
-                        lidx, tid, 0
+                        lidx, tid, :
                     ] = unmod_result  # or mod_result, depending on target
 
                     self.logger.info(

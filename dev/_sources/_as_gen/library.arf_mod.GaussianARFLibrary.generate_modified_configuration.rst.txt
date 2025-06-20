@@ -1,0 +1,6 @@
+library.arf\_mod.GaussianARFLibrary.generate\_modified\_configuration
+=====================================================================
+
+.. currentmodule:: library.arf_mod
+
+.. automethod:: GaussianARFLibrary.generate_modified_configuration

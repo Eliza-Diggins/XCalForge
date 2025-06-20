@@ -1,0 +1,6 @@
+library.base.ModificationLibrary.is\_generated
+==============================================
+
+.. currentmodule:: library.base
+
+.. autoproperty:: ModificationLibrary.is_generated

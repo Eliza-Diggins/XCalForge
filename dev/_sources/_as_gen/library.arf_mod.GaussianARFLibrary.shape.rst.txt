@@ -1,0 +1,6 @@
+library.arf\_mod.GaussianARFLibrary.shape
+=========================================
+
+.. currentmodule:: library.arf_mod
+
+.. autoproperty:: GaussianARFLibrary.shape

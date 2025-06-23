@@ -1,6 +1,0 @@
-library.base.ModificationLibrary.generate\_model\_modified
-==========================================================
-
-.. currentmodule:: library.base
-
-.. automethod:: ModificationLibrary.generate_model_modified

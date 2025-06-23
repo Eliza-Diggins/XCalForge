@@ -1,0 +1,6 @@
+library.arf\_mod.GaussianARFLibrary.\_\_init\_\_
+================================================
+
+.. currentmodule:: library.arf_mod
+
+.. automethod:: GaussianARFLibrary.__init__

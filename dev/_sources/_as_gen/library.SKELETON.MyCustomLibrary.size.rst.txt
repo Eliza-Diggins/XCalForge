@@ -1,0 +1,6 @@
+library.SKELETON.MyCustomLibrary.size
+=====================================
+
+.. currentmodule:: library.SKELETON
+
+.. autoproperty:: MyCustomLibrary.size

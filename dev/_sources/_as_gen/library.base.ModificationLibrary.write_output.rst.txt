@@ -1,0 +1,6 @@
+library.base.ModificationLibrary.write\_output
+==============================================
+
+.. currentmodule:: library.base
+
+.. automethod:: ModificationLibrary.write_output

@@ -1,0 +1,6 @@
+library.arf\_mod.GaussianARFLibrary.base\_arf\_table
+====================================================
+
+.. currentmodule:: library.arf_mod
+
+.. autoproperty:: GaussianARFLibrary.base_arf_table

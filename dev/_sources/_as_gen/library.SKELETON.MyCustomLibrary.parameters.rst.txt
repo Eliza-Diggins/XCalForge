@@ -1,0 +1,6 @@
+library.SKELETON.MyCustomLibrary.parameters
+===========================================
+
+.. currentmodule:: library.SKELETON
+
+.. autoproperty:: MyCustomLibrary.parameters

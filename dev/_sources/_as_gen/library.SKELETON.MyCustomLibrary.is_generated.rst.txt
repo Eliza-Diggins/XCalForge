@@ -1,0 +1,6 @@
+library.SKELETON.MyCustomLibrary.is\_generated
+==============================================
+
+.. currentmodule:: library.SKELETON
+
+.. autoproperty:: MyCustomLibrary.is_generated

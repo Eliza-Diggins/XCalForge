@@ -8,29 +8,17 @@ XCalForge Reference
    :local:
    :depth: 2
 
-Overview
---------
-
-This section provides theoretical context and supporting documentation for **XCalForge**, including its scientific motivation and usage within calibration correction workflows.
-
-.. toctree::
-   :titlesonly:
-   :caption: Theory and Background
-   :maxdepth: 1
-
-   theory.rst
-
 Getting Started
 ---------------
 
 Installation
 ~~~~~~~~~~~~
 
-Instructions for setting up the environment, dependencies, and preparing your system (e.g., HPC environments, XSPEC, MPI).
+Step-by-step instructions for setting up the XCalForge environment, managing dependencies, and preparing your system. Includes guidance for HPC deployments, XSPEC configuration, and MPI support.
 
 .. toctree::
    :titlesonly:
-   :caption: Theory and Background
+   :caption: Install
    :maxdepth: 1
 
    install.rst
@@ -38,9 +26,28 @@ Instructions for setting up the environment, dependencies, and preparing your sy
 Library Generation
 ~~~~~~~~~~~~~~~~~~
 
-Details on generating synthetic data libraries using grid-based simulations, including MPI distribution and HDF5 finalization.
+Comprehensive guide to building synthetic data libraries using parameter grids. Covers grid construction, distributed simulation with MPI, and efficient finalization with HDF5 outputs.
 
-Inference & Machine Learning
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. toctree::
+   :titlesonly:
+   :caption: Library Generation
+   :maxdepth: 1
 
-Guidelines for training neural emulators and performing parameter inference using observed temperature discrepancies.
+   library/overview.rst
+
+Inference and Machine Learning
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Overview of performing scientific inference with XCalForge. Includes workflows for training neural emulators, modeling temperature distortions, and applying parameter inference to observational data.
+
+Background
+----------
+
+This section covers various aspects of the underlying theory and statistical approach of the XCalForge approach:
+
+.. toctree::
+   :titlesonly:
+   :caption: Background
+   :maxdepth: 1
+
+   theory/libgen.rst

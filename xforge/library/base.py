@@ -23,11 +23,56 @@ xspec = get_xspec()
 
 class ModificationLibrary(ABC):
     """
-    Base class for loading and interacting with a pre-generated synthetic fitting library.
+    Abstract base class for calibration modification libraries.
 
-    This class provides common logic for loading configuration, parameter space, and output
-    data from a specified directory. It assumes the library has already been generated and
-    contains a configuration file, parameter definitions, and combined results.
+    Modification libraries are structured, disk-backed datasets that map
+    telescope configuration modifications to observable temperature recovery
+    performance through synthetic X-ray simulations.
+
+    This class provides core logic for:
+
+    - Managing a reproducible library directory structure
+    - Loading and validating parameter grids from HDF5
+    - Tracking configuration and metadata via YAML
+    - Parallelized, MPI-based synthetic data generation with XSPEC
+    - Storing results for downstream machine learning or inference tasks
+
+    Subclasses must implement concrete behavior for:
+
+    1. Generating *unmodified* configurations:
+       Defines the baseline, nominal telescope setup used during fitting,
+       representing an outdated, incorrect, or biased calibration state.
+
+    2. Generating *modified* configurations:
+       Defines perturbed telescope setups incorporating proposed calibration
+       modifications. Used to generate synthetic "true" observations.
+
+    3. Constructing XSPEC models for both configurations at a given physical parameter
+       (typically temperature).
+
+    4. Fitting routines for extracting temperature estimates from synthetic spectra
+       using both configurations.
+
+    Library Generation Workflow:
+
+    - A multi-dimensional grid of calibration parameters is specified.
+    - For each grid point:
+        * Synthetic spectra are generated with the modified configuration (true calibration).
+        * Spectra are analyzed with both modified and unmodified configurations.
+        * Discrepancies in recovered temperatures are recorded.
+    - This process is distributed across MPI ranks for efficiency.
+    - Final results are consolidated into a HDF5-backed library.
+
+    The resulting library provides a structured dataset to:
+
+    - Train machine learning emulators for calibration inference.
+    - Quantify the impact of calibration uncertainties on temperature recovery.
+    - Systematically explore complex calibration modifications.
+
+    See Also:
+    ---------
+    :meth:`create_library` : Initialize new libraries with specified parameter grids.
+    :meth:`generate_library` : Run synthetic data generation in parallel.
     """
 
     # ================================ #
@@ -39,11 +84,42 @@ class ModificationLibrary(ABC):
     # in order to determine if a particular flag needs to be modified.
     __PARAMETERS__: List[str] = []
     """
-    The ALLOWED set of parameter names (each element) for this
-    modification library class. If parameters are detected which do not
-    exist in __PARAMETERS__, then an error is raised.
+    List of allowed parameter names for this modification library.
+
+    - These parameters define the axes of the parameter grid for the library.
+    - Each element should be a string corresponding to a valid hyperparameter (e.g., "mu", "sigma", "amplitude").
+    - Parameter arrays for these keys are stored in the "PARAMS" group of the HDF5 file.
+    - If any parameter in the input grid does not appear in this list, an error is raised during initialization.
+
+    Subclasses MUST override this to explicitly declare the valid parameters for the modification model.
     """
-    __CONFIG__: Dict[str, Any] = {"logging.level": "INFO"}
+
+    __CONFIG__: Dict[str, Any] = {
+        "logging.file_level": "INFO",
+        "logging.term_level": "INFO",
+        "logging.fmt": "%(asctime)s - %(levelname)s - %(message)s",
+    }
+    """
+    Default configuration dictionary for the library.
+
+    - Populates the persistent `config.yaml` during library creation.
+    - Supports hierarchical, nested configuration via dotted keys.
+    - Can be overridden at library creation time using the `config` argument.
+    - Common options include:
+
+        * `"logging.level"`: Default logging verbosity (e.g., "INFO", "DEBUG").
+        * `"logging.fmt"`: Optional custom logging format string.
+        * Additional subclass-specific settings (e.g., file paths, hyperparameters).
+
+    Subclasses can extend this to provide additional default options relevant to the specific modification model.
+    """
+    __OUTPUT_SHAPE__: Tuple[int, ...] = (3,)
+    """
+    Shape of the stored output for each parameter-temperature grid point.
+
+    Defaults to (3,), corresponding to (recovered temperature, fit statistic, uncertainty).
+    Subclasses may override to extend this, e.g., (5,) for additional diagnostics.
+    """
 
     # ========================== #
     # Initialization             #
@@ -53,19 +129,41 @@ class ModificationLibrary(ABC):
     # relatively consistent.
     def __init__(self, directory: Union[str, Path]):
         """
-        Initialize a `ModificationLibrary` from an existing library directory.
+        Load an existing modification library from disk.
+
+        This initializer loads the library's configuration, parameter grid, and output paths,
+        preparing the object for read access, logging, and potential downstream simulation or analysis.
 
         Parameters
         ----------
         directory : str or Path
-            Path to the root library directory containing the required structure.
+            Path to the root directory of the library. This directory must already contain
+            a valid library structure, including:
+
+            - `library.h5` : HDF5 file with parameter grids and (optionally) simulation results.
+            - `config.yaml` : Persistent configuration file defining logging levels, runtime options, etc.
+            - `logs/` : Directory for per-rank log outputs (will be created if missing).
+            - `cache/` : Directory for temporary working files (will be created if missing).
+            - `bin/` : Optional directory for persistent generated files (e.g., ARFs).
 
         Raises
         ------
         ValueError
-            If the directory does not exist.
+            If the specified directory does not exist.
         FileNotFoundError
-            If critical components (like config.yaml or library.h5) are missing.
+            If critical components of the library structure are missing, such as `config.yaml` or `library.h5`.
+
+        Notes
+        -----
+        - This method does NOT generate a new library; it is strictly for loading and interacting with
+        pre-existing libraries generated via `create_library`.
+        - The configuration is loaded using :class:`~xforge.utils.ConfigManager` and
+        made accessible via the `.config` property.
+        - Logger setup is performed automatically, including rank-aware log file creation in distributed environments.
+
+        See Also
+        --------
+        :meth:`create_library` : For creating new libraries with validated structure and default configuration.
         """
         # Configure the libraries directory and ensure that
         # the path exists before proceeding.
@@ -163,7 +261,7 @@ class ModificationLibrary(ABC):
 
         # Configure for parallelism
         self.logger = logging.getLogger(logger_name + f".{rank}")
-        self.logger.setLevel(self.config.get("logging.level", logging.DEBUG))
+        self.logger.setLevel(self.config.get("logging.file_level", logging.DEBUG))
 
         # Avoid adding multiple handlers if already initialized
         if self.logger.hasHandlers():
@@ -184,7 +282,9 @@ class ModificationLibrary(ABC):
 
         if rank == 0:
             console_handler = logging.StreamHandler()
-            console_handler.setLevel(logging.INFO)
+            console_handler.setLevel(
+                self.config.get("logging.term_level", logging.DEBUG)
+            )
             console_handler.setFormatter(formatter)
             self.logger.addHandler(console_handler)
 
@@ -251,25 +351,36 @@ class ModificationLibrary(ABC):
         **kwargs,
     ):
         """
-        Create a new library directory with required structure and parameter file.
+        Initialize a new modification library directory on disk with the required structure,
+        parameter grid, and optional configuration file.
+
+        This method prepares the library directory but does not run the generation process.
+        After creation, the library instance can be used to perform simulations and populate results.
 
         Parameters
         ----------
         directory : str or Path
-            Path to the root of the new library. If the directory already exists,
-            the behavior is dictated by the `overwrite` parameter.
+            Path to the root of the new library. This will contain the generated HDF5 data,
+            configuration files, cache, and outputs.
         parameters : dict[str, Sequence]
-            Parameter grid as a dictionary of 1D arrays/lists for each axis. These must
-            match the class's allowed parameters.
-        overwrite : bool
-            Whether to overwrite an existing directory. If False and directory exists, an error is raised.
+            Parameter grid specifying each axis of the modification space. Keys must match the
+            class's allowed `__PARAMETERS__`. Each value should be a 1D array-like sequence.
+        overwrite : bool, default = False
+            Whether to overwrite an existing directory. If False and the target directory exists,
+            a `ValueError` is raised. If True, the directory is removed and recreated.
         config : dict, optional
-            Optional configuration dictionary to write to `config.yaml`. If None, a default is used.
+            Optional dictionary of configuration values to write to `config.yaml`.
+            These override defaults defined in `__CONFIG__`.
 
         Returns
         -------
         ModificationLibrary
-            An instance of the initialized library.
+            An instance of the initialized library ready for generation or inspection.
+
+        Raises
+        ------
+        ValueError
+            If the directory exists and `overwrite` is False.
         """
         import gc
         import shutil
@@ -280,18 +391,17 @@ class ModificationLibrary(ABC):
         if directory.exists():
             if not overwrite:
                 raise ValueError(
-                    f"Directory `{directory}` already exists. Use `overwrite=True` to recreate."
+                    f"Directory `{directory}` already exists. Use `overwrite=True` to recreate it."
                 )
-
             gc.collect()
             shutil.rmtree(directory)
 
-        # Create necessary folders
+        # Create required subdirectories and files
         cls.__create_structures__(directory)
         cls.__write_datafile__(directory, parameters)
         cls.__write_config__(directory, config=config)
 
-        # Barrier to ensure rank 0 finishes before others continue
+        # Instantiate and return the initialized library
         return cls(directory)
 
     @classmethod
@@ -331,7 +441,7 @@ class ModificationLibrary(ABC):
                     raise ValueError(
                         f"Invalid parameter key `{key}`. Allowed: {cls.__PARAMETERS__}"
                     )
-                param_group.create_dataset(key, data=np.array(values))
+                param_group.create_dataset(key, data=np.array(values, dtype="f8"))
 
     @classmethod
     def __write_config__(
@@ -366,56 +476,75 @@ class ModificationLibrary(ABC):
     # Properties                 #
     # ========================== #
     @property
-    def config(self) -> "ConfigManager":
+    def config(self) -> ConfigManager:
         """
-        Accessor for the YAML-backed configuration.
+        Access the YAML-backed configuration for this library.
+
+        Provides persistent, dictionary-like access to all stored configuration options,
+        typically loaded from `config.yaml`.
 
         Returns
         -------
         ConfigManager
-            Configuration manager that supports nested dictionary-style access.
+            The configuration manager for this library instance.
         """
         return self.__config__
 
     @property
     def parameters(self) -> Dict[str, np.ndarray]:
         """
-        Accessor for the parameter arrays loaded from disk.
+        Access the parameter grid defining the modification space.
+
+        The parameters are loaded from the `PARAMS` group in the HDF5 file at initialization,
+        and provide the 1D arrays defining each axis of the parameter lattice.
 
         Returns
         -------
         dict[str, np.ndarray]
-            Dictionary of parameter arrays (1D), as stored in the 'PARAMS' HDF5 group.
+            Dictionary mapping parameter names to their 1D value arrays.
         """
         return self.__parameters__
 
     @property
     def size(self) -> int:
         """
-        Total number of parameter combinations in the grid.
+        Total number of unique parameter combinations in the modification grid.
+
+        Computed as the product of the lengths of all parameter arrays.
 
         Returns
         -------
         int
-            The product of the lengths of all parameter value lists, representing the
-            total number of points in the parameter lattice to be explored.
+            Number of grid points (i.e., total simulations per temperature).
         """
-        return int(np.prod([len(pv) for pk, pv in self.__parameters__.items()]))
+        return int(np.prod([len(values) for values in self.__parameters__.values()]))
 
     @property
-    def shape(self) -> tuple:
-        return tuple(len(pv) for _, pv in self.__parameters__.items())
+    def shape(self) -> Tuple[int, ...]:
+        """
+        Shape of the parameter grid across all modification axes.
+
+        Each element in the tuple corresponds to the length of one parameter array.
+
+        Returns
+        -------
+        tuple of int
+            The dimensional shape of the parameter lattice.
+        """
+        return tuple(len(values) for values in self.__parameters__.values())
 
     @property
     def is_generated(self) -> bool:
         """
-        Returns True if the library has been generated, i.e.,
-        if the 'LIBRARY' group exists in the HDF5 file.
+        Check if the synthetic library results have been generated.
+
+        Returns True if the 'LIBRARY' group exists in the HDF5 file, indicating that
+        results and temperature arrays are present.
 
         Returns
         -------
         bool
-            True if the synthetic library has been fully generated.
+            True if results exist, False otherwise.
         """
         with h5py.File(self.__assets__["data"], "r") as f:
             return "LIBRARY" in f
@@ -423,12 +552,13 @@ class ModificationLibrary(ABC):
     @property
     def temperatures(self) -> Optional[np.ndarray]:
         """
-        Return the temperature grid used in the synthetic library.
+        Access the list of simulated temperatures in the library.
 
         Returns
         -------
         np.ndarray or None
-            Array of temperature values used in the simulation, or None if not generated.
+            Array of temperature values used in the simulations, or None if results
+            have not yet been generated.
         """
         if not self.is_generated:
             return None
@@ -437,23 +567,41 @@ class ModificationLibrary(ABC):
             return f["LIBRARY"]["temps"][...]
 
     @contextmanager
-    def library(self, mode="r"):
+    def library(self, mode: str = "r"):
         """
-        Context manager for lazy access to the generated library results.
+        Context manager for safe, lazy access to the generated library results.
+
+        This provides access to:
+
+        - The `results` dataset, containing parameter recovery outputs.
+        - The `temps` dataset, containing the temperature grid.
+
+        Example usage:
+
+        .. code-block:: python
+
+            with lib.library() as (results, temps):
+                print(results.shape)
+                print(temps)
+
+        Parameters
+        ----------
+        mode : str, default = "r"
+            File mode for opening the HDF5 file (e.g., "r", "r+", "a").
 
         Yields
         ------
         Tuple[h5py.Dataset, h5py.Dataset]
-            A tuple of (results, temperatures) datasets from the 'LIBRARY' group.
+            Tuple of (results, temperatures) datasets from the 'LIBRARY' group.
 
         Raises
         ------
         RuntimeError
-            If the library has not been generated.
+            If the library has not yet been generated and no 'LIBRARY' group exists.
         """
         if not self.is_generated:
             raise RuntimeError(
-                "This library has not been generated. No results available."
+                "This library has not been generated. Run the generation process before accessing results."
             )
 
         with h5py.File(self.__assets__["data"], mode) as f:
@@ -461,120 +609,170 @@ class ModificationLibrary(ABC):
             yield lib_group["results"], lib_group["temps"]
 
     # ================================ #
-    # Library Generation               #
+    # Library Generation - User Hooks  #
     # ================================ #
     @abstractmethod
     def generate_unmodified_configuration(self, id: int, **parameters) -> dict:
         """
-        Generate the configuration dictionary for the unmodified system.
+        Define the unmodified (baseline) telescope configuration for a given parameter grid point.
 
-        This configuration should define file paths and simulation parameters required
-        for generating or loading the standard model, including ARF, RMF, exposure, etc.
+        The "unmodified" configuration represents the current or assumed telescope setup in operational use.
+        It reflects how the instrument is calibrated in practice, even if that calibration is incorrect
+        or outdated. This configuration will be used during the fitting stage to mimic real-world biases
+        in parameter recovery.
+
+        Typical fields include:
+
+        - "response": Path to RMF file (energy redistribution matrix)
+        - "arf": Path to ARF file (effective area curve)
+        - "exposure": Exposure time in seconds (default: 50,000)
+        - Optional: "background", "correction", "backExposure"
+
+        Users may dynamically generate or retrieve these files based on `parameters`, for example to test
+        different RMF versions, apply no modification to ARFs, or implement known flawed configurations.
 
         Parameters
         ----------
         id : int
-            Global index in the parameter space (flattened).
+            Global linear index into the parameter grid for this simulation.
         **parameters : dict
-            Dictionary of parameter values at this grid point.
+            Dictionary of hyperparameter values for this grid point, as defined by the library's parameter grid.
 
         Returns
         -------
         dict
-            Configuration dictionary containing file references and simulation settings.
+            Dictionary of file paths and settings required by XSPEC's `fakeit` and fitting routines.
         """
         ...
 
     @abstractmethod
     def generate_modified_configuration(self, id: int, **parameters) -> dict:
         """
-        Generate the configuration dictionary for the modified system.
+        Define the modified telescope configuration incorporating calibration perturbations.
 
-        This configuration typically corresponds to a perturbed version of the unmodified
-        configuration—e.g., with a distorted ARF or a changed response matrix.
+        The "modified" configuration represents the true, unknown state of the instrument after applying
+        a simulated calibration distortion (e.g., ARF bias, instrument drift). This is used to generate
+        synthetic photon spectra that reflect calibration errors.
+
+        The modified configuration typically mirrors the unmodified version, with selective changes introduced,
+        such as distorted ARFs or different instrumental responses.
 
         Parameters
         ----------
         id : int
-            Global index in the parameter space (flattened).
+            Global linear index into the parameter grid for this simulation.
         **parameters : dict
-            Dictionary of parameter values at this grid point.
+            Dictionary of hyperparameter values for this grid point, controlling the modification (e.g., Gaussian ARF parameters).
 
         Returns
         -------
         dict
-            Configuration dictionary for the modified system.
+            Dictionary of file paths and settings defining the perturbed telescope configuration for synthetic data generation.
         """
         ...
 
     @abstractmethod
-    def generate_model_unmodified(self, T, **parameters):
+    def generate_model_unmodified(self, T: float, **parameters):
         """
-        Build and return the XSPEC model for the unmodified configuration.
+        Construct the XSPEC spectral model corresponding to the unmodified configuration.
 
-        This should construct the physical model (e.g., `tbabs*apec`) corresponding to the
-        unmodified simulation configuration for a given temperature.
+        This defines the astrophysical emission model (e.g., thermal plasma) applied when fitting
+        the synthetic spectra with the unmodified, baseline calibration.
+
+        This should match the scientific model expected by the user but must assume the unmodified instrument setup.
+        In most cases, the same astrophysical model is used in both unmodified and modified stages,
+        but with different calibration files driving the response.
 
         Parameters
         ----------
         T : float
-            Temperature (or other synthetic variable) used to build the model.
+            Physical parameter for the simulation, typically the true plasma temperature.
         **parameters : dict
-            Dictionary of parameter values at this grid point.
+            Dictionary of hyperparameter values for this grid point.
 
         Returns
         -------
         xspec.Model
-            The unmodified XSPEC model instance.
+            The XSPEC model instance, fully constructed and ready for use with `AllData` for fitting.
         """
         ...
 
     @abstractmethod
-    def generate_model_modified(self, T, **parameters):
+    def generate_model_modified(self, T: float, **parameters):
         """
-        Build and return the XSPEC model for the modified configuration.
+        Construct the XSPEC spectral model corresponding to the modified, perturbed configuration.
 
-        This typically reflects a perturbed version of the base model—e.g., using a
-        modified response or artificial distortion in the instrument model.
+        This model should incorporate the same astrophysical description as the unmodified case
+        but reflects the application of calibration errors (via modified response files or models).
+        The resulting synthetic data generated with this model is considered the "ground truth"
+        for the purposes of recovery testing.
 
         Parameters
         ----------
         T : float
-            Temperature (or other synthetic variable) used to build the model.
+            Physical parameter for the simulation, typically the true plasma temperature.
         **parameters : dict
-            Dictionary of parameter values at this grid point.
+            Dictionary of hyperparameter values for this grid point, controlling the calibration modification.
 
         Returns
         -------
         xspec.Model
-            The modified XSPEC model instance.
+            The XSPEC model instance, fully constructed with the modified configuration for synthetic data generation.
         """
         ...
 
     @abstractmethod
-    def fit_unmodified(self, config, **parameters) -> Tuple[float, float, float]:
+    def fit_unmodified(self, config: dict, **parameters) -> Tuple[float, float, float]:
         """
-        Perform fitting on the synthetic data using the unmodified configuration.
+        Fit the synthetic dataset using the unmodified configuration.
 
-        This function should load the synthetic dataset (created by the modified model),
-        apply the unmodified model, and extract the best-fit parameters or relevant statistics.
+        This step evaluates how inaccurate calibration files bias parameter recovery.
+        It loads the synthetic data (generated with the modified, true configuration),
+        applies the unmodified setup, and extracts relevant fitting results.
+
+        Typical return values may include:
+
+        - Recovered temperature (float)
+        - Fit statistic (e.g., chi-squared)
+        - Uncertainty estimate (optional, set to 0 or NaN if not used)
 
         Parameters
         ----------
         config : dict
-            Unmodified configuration dictionary.
+            Configuration dictionary from `generate_unmodified_configuration`.
         **parameters : dict
-            Dictionary of parameter values at this grid point.
+            Dictionary of hyperparameter values for this grid point.
 
         Returns
         -------
-        float or array-like
-            Result of the fit (e.g., recovered temperature or fit statistic).
+        Tuple[float, float, float]
+            Results of the fit, typically (recovered_temperature, fit_statistic, uncertainty).
         """
         ...
 
     @abstractmethod
-    def fit_modified(self, config, **parameters) -> Tuple[float, float, float]:
+    def fit_modified(self, config: dict, **parameters) -> Tuple[float, float, float]:
+        """
+        Optionally fit the synthetic dataset using the modified configuration.
+
+        Fitting with the correct, perturbed calibration serves as a sanity check.
+        Ideally, this process should recover the true physical parameters (e.g., input temperature)
+        within statistical uncertainties.
+
+        This step may be omitted or skipped by returning placeholder values if not required.
+
+        Parameters
+        ----------
+        config : dict
+            Configuration dictionary from `generate_modified_configuration`.
+        **parameters : dict
+            Dictionary of hyperparameter values for this grid point.
+
+        Returns
+        -------
+        Tuple[float, float, float]
+            Results of the fit, typically (recovered_temperature, fit_statistic, uncertainty).
+        """
         ...
 
     # -- Tooling -- #
@@ -660,7 +858,7 @@ class ModificationLibrary(ABC):
             # Determine how many temperature samples
             # we're taking in order to build the array.
             Ntemp = len(temperatures)
-            shape = (stop - start, Ntemp, 3)
+            shape = (stop - start, Ntemp, *self.__class__.__OUTPUT_SHAPE__)
 
             # Now create the dataset.
             fio.create_dataset("results", shape=shape, dtype="f8", compression="gzip")
@@ -776,7 +974,7 @@ class ModificationLibrary(ABC):
 
             # Concatenate and reshape
             flat_dask_array = da.concatenate(darrs, axis=0)
-            full_shape = (*self.shape, Ntemp, 3)
+            full_shape = (*self.shape, Ntemp, *self.__class__.__OUTPUT_SHAPE__)
             reshaped = flat_dask_array.reshape(full_shape)
 
             # Write to final HDF5 file
@@ -814,17 +1012,73 @@ class ModificationLibrary(ABC):
 
         self.logger.info("Library finalization complete.")
 
+    def write_output(
+        self,
+        result_mod: Union[Tuple, np.ndarray],
+        result_unmod: Union[Tuple, np.ndarray],
+        true_temperature: float,
+        **parameters,
+    ) -> np.ndarray:
+        """
+        Construct the array to store in the results dataset for this grid point.
+
+        Parameters
+        ----------
+        result_mod : tuple or array-like, optional
+            Fit results using the modified configuration (e.g., sanity check).
+        result_unmod : tuple or array-like, optional
+            Fit results using the unmodified configuration (primary target).
+        true_temperature : float
+            The true input temperature used in the synthetic simulation.
+        **parameters : dict
+            Dictionary of parameter values at this grid point.
+
+        Returns
+        -------
+        np.ndarray
+            Array matching `__OUTPUT_SHAPE__` to store in the results dataset.
+
+        Notes
+        -----
+        The default implementation stores the recovered unmodified temperature,
+        fit statistic, and uncertainty. Subclasses may override to customize outputs.
+        """
+        output = np.zeros(self.__OUTPUT_SHAPE__, dtype=float)
+        output[0] = result_unmod[0]  # Recovered temperature
+        output[1] = result_unmod[1]  # Fit statistic
+        output[2] = result_unmod[2]  # Uncertainty
+
+        return output
+
+    # ------------------------------- #
+    # Simulation                      #
+    # ------------------------------- #
     def generate_library(self, temperatures, clear_cache: bool = True):
         """
-        Runs the generation and fitting loop for this MPI rank. For each assigned
-        parameter set and temperature, it creates synthetic data, performs both unmodified
-        and modified fits, and writes the result to a rank-specific HDF5 file.
+        Run the distributed, MPI-parallelized generation and fitting process for this library.
+
+        Each MPI rank processes a subset of the parameter grid, performing:
+        - Synthetic data generation with the modified configuration.
+        - Optional fitting with the modified configuration (sanity check).
+        - Fitting with the unmodified configuration (bias quantification).
+        - Storing results in rank-specific HDF5 files.
+
+        Rank 0 consolidates outputs into the final library and optionally clears the working cache.
 
         Parameters
         ----------
         temperatures : Sequence[float]
-            List of temperature values to loop over in synthetic data generation.
+            Array of true temperatures to simulate at each grid point.
+        clear_cache : bool, default = True
+            Whether to delete temporary working files (e.g., synthetic spectra, per-rank results) after library finalization.
+
+        Notes
+        -----
+        - The process assumes a valid parameter grid and configuration system are defined.
+        - Results include recovery errors based on the unmodified instrument configuration, mimicking real-world inference biases.
+        - The library must be finalized on rank 0 after all ranks complete.
         """
+
         # @@ Configure the run @@ #
         # On this processor, we're going to configure the run by
         # determining the relevant start and stop indices and
@@ -882,7 +1136,7 @@ class ModificationLibrary(ABC):
                     )
 
                     # Fit using unmodified model
-                    _ = self.fit_modified(mod_config)
+                    result_mod = self.fit_modified(mod_config)
 
                     # Clear the model and rebuild with the
                     # unmodified
@@ -890,15 +1144,21 @@ class ModificationLibrary(ABC):
                     _ = self.generate_model_unmodified(T, **iteration_parameters)
 
                     # Build the mod result
-                    unmod_result = self.fit_unmodified(unmod_config)
+                    result_unmod = self.fit_unmodified(unmod_config)
+
+                    # Construct output
+                    output = self.write_output(
+                        result_mod=result_mod,
+                        result_unmod=result_unmod,
+                        true_temperature=T,
+                        **iteration_parameters,
+                    )
 
                     # Optionally: fit using modified model (if relevant)
                     # mod_result = self.fit_modified()
 
                     # Store result
-                    df["results"][
-                        lidx, tid, :
-                    ] = unmod_result  # or mod_result, depending on target
+                    df["results"][lidx, tid, :] = output
 
                     # Determine % complete on this process.
                     __PERCNT_DONE__ = (

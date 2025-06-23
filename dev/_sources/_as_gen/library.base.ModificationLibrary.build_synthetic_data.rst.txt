@@ -1,6 +1,0 @@
-library.base.ModificationLibrary.build\_synthetic\_data
-=======================================================
-
-.. currentmodule:: library.base
-
-.. automethod:: ModificationLibrary.build_synthetic_data

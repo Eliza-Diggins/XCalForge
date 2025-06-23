@@ -271,6 +271,9 @@ class ModificationLibrary(ABC):
         ModificationLibrary
             An instance of the initialized library.
         """
+        import gc
+        import shutil
+
         directory = Path(directory).expanduser().resolve()
 
         # Handle overwrite logic
@@ -279,19 +282,16 @@ class ModificationLibrary(ABC):
                 raise ValueError(
                     f"Directory `{directory}` already exists. Use `overwrite=True` to recreate."
                 )
-            import shutil
 
+            gc.collect()
             shutil.rmtree(directory)
 
         # Create necessary folders
         cls.__create_structures__(directory)
-
-        # Write the data file with parameter arrays
         cls.__write_datafile__(directory, parameters)
-
-        # Write the configuration YAML
         cls.__write_config__(directory, config=config)
 
+        # Barrier to ensure rank 0 finishes before others continue
         return cls(directory)
 
     @classmethod
@@ -845,6 +845,7 @@ class ModificationLibrary(ABC):
             # @@ Iterate through run @@ #
             # We now iterate through the run of indices and
             # perform the analysis at each index.
+            __NOP_TOTAL__ = (pstop_idx - pstart_idx) * len(temperatures)
             for lidx, gidx in enumerate(range(pstart_idx, pstop_idx)):
                 self.logger.debug("Start iteration (%s,%s).", lidx, gidx)
                 # Construct the N-dim index from the gidx so that we can access
@@ -881,7 +882,7 @@ class ModificationLibrary(ABC):
                     )
 
                     # Fit using unmodified model
-                    mod_result = self.fit_modified(mod_config)
+                    _ = self.fit_modified(mod_config)
 
                     # Clear the model and rebuild with the
                     # unmodified
@@ -899,14 +900,19 @@ class ModificationLibrary(ABC):
                         lidx, tid, :
                     ] = unmod_result  # or mod_result, depending on target
 
+                    # Determine % complete on this process.
+                    __PERCNT_DONE__ = (
+                        100 * (lidx * len(temperatures) + tid) / __NOP_TOTAL__
+                    )
+
                     self.logger.info(
-                        "Iteration (%s,%s,%s) -- T_mod=%s, T_unmod=%s, T_True=%s",
-                        lidx,
+                        "[Rank %d] Iter %d/%d | ParamIdx: %d | TempIdx: %d | Progress: %.2f%%",
+                        _mpirank,
+                        lidx + 1,
+                        pstop_idx - pstart_idx,
                         gidx,
                         tid,
-                        mod_result,
-                        unmod_result,
-                        T,
+                        __PERCNT_DONE__,
                     )
 
                     self.logger.debug("Start temperature iteration %s. [DONE]", tid)
@@ -924,3 +930,43 @@ class ModificationLibrary(ABC):
 
                     shutil.rmtree(self.__assets__["cache"])
                     self.__assets__["cache"].mkdir(parents=True, exist_ok=True)
+
+    # ------------------------------------ #
+    # Utility Methods                      #
+    # ------------------------------------ #
+    def set_logging_level(
+        self, level: Union[int, str], handlers: Optional[List[logging.Handler]] = None
+    ):
+        """
+        Update the logging level for the library logger and its handlers.
+
+        Parameters
+        ----------
+        level : int or str
+            Desired logging level (e.g., logging.DEBUG or "DEBUG").
+        handlers : list[logging.Handler], optional
+            List of specific handlers to update. If None, all attached handlers are updated.
+        """
+        import logging
+
+        # Convert string levels to integer values
+        if isinstance(level, str):
+            level_upper = level.upper()
+            level = getattr(logging, level_upper, None)
+            if not isinstance(level, int):
+                raise ValueError(f"Invalid logging level: {level_upper}")
+
+        # Update the config for persistence
+        self.config["logging.level"] = logging.getLevelName(level)
+
+        # Update logger level
+        self.logger.setLevel(level)
+
+        # Select handlers
+        target_handlers = handlers if handlers is not None else self.logger.handlers
+
+        # Update handler levels
+        for h in target_handlers:
+            h.setLevel(level)
+
+        self.logger.debug("Logger level set to %s.", logging.getLevelName(level))

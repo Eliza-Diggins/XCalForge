@@ -1,0 +1,6 @@
+library.arf\_mod.GaussianARFLibrary.create\_rank\_output\_file
+==============================================================
+
+.. currentmodule:: library.arf_mod
+
+.. automethod:: GaussianARFLibrary.create_rank_output_file

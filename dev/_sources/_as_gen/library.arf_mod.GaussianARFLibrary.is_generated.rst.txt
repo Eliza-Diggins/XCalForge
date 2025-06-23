@@ -1,0 +1,6 @@
+library.arf\_mod.GaussianARFLibrary.is\_generated
+=================================================
+
+.. currentmodule:: library.arf_mod
+
+.. autoproperty:: GaussianARFLibrary.is_generated

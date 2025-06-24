@@ -4,9 +4,12 @@
 Library Generation User Guide
 ===============================
 
-This guide explains how to build, run, and manage synthetic calibration modification libraries using the `xrmodifier` framework.
+This guide explains how to build, run,
+and manage synthetic calibration modification
+libraries using the `xrmodifier` framework.
 
-For theoretical background on the principles and motivations of library generation, see :ref:`library_gen_theory`.
+For theoretical background on the principles
+and motivations of library generation, see :ref:`library_gen_theory`.
 
 Overview
 --------

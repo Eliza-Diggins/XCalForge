@@ -1,53 +1,98 @@
 .. _reference:
 
-=====================
-XCalForge Reference
-=====================
+=============================
+XCalForge | Reference Manual
+=============================
+
+**XCalForge** is a comprehensive toolkit for studying cross calibration issues in
+X-ray astronomy.
+
+This reference provides everything you need to install, operate,
+and understand XCalForge, from technical setup to theoretical background.
 
 .. contents::
    :local:
    :depth: 2
+   :backlinks: none
 
-Getting Started
----------------
 
-Installation
-~~~~~~~~~~~~
+🚀 Getting Started
+===================
 
-Step-by-step instructions for setting up the XCalForge environment, managing dependencies, and preparing your system. Includes guidance for HPC deployments, XSPEC configuration, and MPI support.
+Everything you need to set up and deploy **XCalForge** for your research environment.
+
+.. grid:: 1 1 2 2
+   :gutter: 2
+
+   .. grid-item-card:: 🔧 Installation Guide
+      :link: install.html
+      :text-align: center
+
+      Step-by-step instructions for environment setup, dependencies, and HPC deployment with MPI.
+
+
+📚 Core Workflows
+===================
+
+Master the core functionality of **XCalForge**, from generating synthetic spectral
+libraries to applying statistical inference on observational datasets. At its core, **XCalForge** enables a
+complete calibration workflow for X-ray astronomy, combining simulation,
+machine learning, and statistical modeling:
+
+Overview
+--------
+
+The core workflow in XCalForge involves simulating observations using different
+telescope calibrations to construct a library of temperature discrepancies. These are
+then used in an emulator to identify possible configuration changes to re-callibrate
+telescopes.
 
 .. toctree::
-   :titlesonly:
-   :caption: Install
    :maxdepth: 1
 
-   install.rst
+   overview.rst
+
 
 Library Generation
-~~~~~~~~~~~~~~~~~~
+-------------------
 
-Comprehensive guide to building synthetic data libraries using parameter grids. Covers grid construction, distributed simulation with MPI, and efficient finalization with HDF5 outputs.
+Build high-fidelity synthetic libraries with support for distributed computing and large parameter spaces.
 
 .. toctree::
-   :titlesonly:
-   :caption: Library Generation
    :maxdepth: 1
+   :caption: Library Generation
 
    library/overview.rst
 
-Inference and Machine Learning
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Overview of performing scientific inference with XCalForge. Includes workflows for training neural emulators, modeling temperature distortions, and applying parameter inference to observational data.
+Inference & Machine Learning
+-----------------------------
 
-Background
-----------
+Leverage neural emulators and statistical methods to analyze simulation outputs or observational datasets.
 
-This section covers various aspects of the underlying theory and statistical approach of the XCalForge approach:
+
+
+📖 Background & Theory
+=======================
+
+Understand the scientific principles and statistical models behind **XCalForge**.
 
 .. toctree::
-   :titlesonly:
-   :caption: Background
    :maxdepth: 1
+   :caption: Theoretical Foundations
 
    theory/libgen.rst
+
+
+💻 Technical Notes
+===================
+
+
+
+🎯 Need Help?
+===================
+
+For troubleshooting, feature requests, or contributing:
+
+- Visit the `GitHub Repository <https://github.com/eliza-diggins/XCalForge>`_
+- Open an issue or discussion thread

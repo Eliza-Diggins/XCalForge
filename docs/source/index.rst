@@ -1,36 +1,42 @@
 XCalForge
-===============
+=============================
 
-|isort| |black| |Pre-Commit| |docformatter| |NUMPSTYLE| |Commits| |CONTRIBUTORS| |docs|
+|isort| |black| |Pre-Commit| |docformatter| |NUMPSTYLE| |Commits| |Contributors| |docs|
 
 .. raw:: html
 
    <hr style="height:2px;background-color:black">
 
-
 **XCalForge** is a research-oriented framework for analyzing and correcting calibration discrepancies
- between X-ray telescopes through simulation-driven modeling and machine learning.
+between X-ray telescopes using simulation-driven modeling and machine learning.
 
-It allows users to:
+XCalForge enables users to:
 
 - Apply parametric modifications to instrument response files (e.g., ARFs)
 - Generate synthetic spectra via XSPEC with modified configurations
-- Fit models to simulated data to evaluate calibration impact
-- Train neural emulators to learn the effect of modifications
-- Infer optimal global calibration adjustments from observed discrepancies
+- Fit models to simulated data to quantify calibration impact
+- Train neural emulators to predict the effect of modifications
+- Infer optimal global calibration adjustments from observational discrepancies
 
-The system is optimized for use on HPC environments and supports MPI-parallel library generation, HDF5 output, and integration with PyXspec for seamless XSPEC simulation control.
+The system is optimized for HPC environments and supports:
 
-Whether you're correcting for ARF biases or validating temperature consistency across missions, **XCalForge** provides a principled and
-extensible toolkit for tackling instrument cross-calibration challenges in X-ray astronomy.
+- MPI-parallel synthetic library generation
+- HDF5 output for scalable data storage
+- Seamless PyXspec integration for XSPEC simulation control
 
+Whether correcting ARF biases or validating temperature consistency across missions,
+**XCalForge** provides a principled and extensible toolkit for addressing
+instrument cross-calibration challenges in X-ray astronomy.
+
+Getting Started
+----------------
+
+To get started with XCalForge, install it by following the instructions on the :ref:`install` page. Once
+the code is installed, check out the :ref:`reference` guide for detailed explanation about how to use the code.
 
 Contents
---------
+------------------------------
 
-.. raw:: html
-
-   <hr style="height:10px;background-color:black">
 
 .. toctree::
    :maxdepth: 1
@@ -39,32 +45,22 @@ Contents
    reference/index
 
 Indices and Tables
-------------------
-
-.. raw:: html
-
-   <hr style="height:10px;background-color:black">
+------------------------------
 
 * :ref:`genindex` – General index of all documented terms
 * :ref:`modindex` – Python module index
 * :ref:`search` – Search the documentation
 
-
 .. |docs| image:: https://img.shields.io/badge/docs-latest-brightgreen
-   :target: https://eliza-diggins.github.io/pisces/build/html/index.html
+   :target: https://eliza-diggins.github.io/XCalForge/build/html/index.html
 
 .. |Pre-Commit| image:: https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white
    :target: https://pre-commit.com/
 
-.. |Xenon| image:: https://img.shields.io/badge/Xenon-enabled-red
-   :target: https://xenon.readthedocs.io/en/latest/
+.. |Contributors| image:: https://img.shields.io/github/contributors/Eliza-Diggins/XCalForge
+   :target: https://github.com/Eliza-Diggins/XCalForge/graphs/contributors
 
-.. |Tests| image:: https://github.com/Pisces-Project/PyMetric/actions/workflows/run_tests.yml/badge.svg
-
-.. |Contributors| image:: https://img.shields.io/github/contributors/Pisces-Project/PyMetric
-   :target: https://github.com/Eliza-Diggins/pisces/graphs/contributors
-
-.. |Commits| image:: https://img.shields.io/github/last-commit/Pisces-Project/PyMetric
+.. |Commits| image:: https://img.shields.io/github/last-commit/Eliza-Diggins/XCalForge
 
 .. |black| image:: https://img.shields.io/badge/code%20style-black-000000
    :target: https://github.com/psf/black
@@ -73,12 +69,7 @@ Indices and Tables
    :target: https://pycqa.github.io/isort/
 
 .. |NUMPSTYLE| image:: https://img.shields.io/badge/%20style-numpy-459db9
-    :target: https://numpydoc.readthedocs.io/en/latest/format.html
+   :target: https://numpydoc.readthedocs.io/en/latest/format.html
 
 .. |docformatter| image:: https://img.shields.io/badge/%20formatter-docformatter-fedcba
-    :target: https://github.com/PyCQA/docformatter
-
-.. |License| image:: https://img.shields.io/pypi/l/pymetric-lib
-.. |Wheel| image:: https://img.shields.io/pypi/wheel/pymetric-lib
-.. |PyVersion| image:: https://img.shields.io/pypi/pyversions/pymetric-lib
-.. |PyPi| image:: https://img.shields.io/pypi/v/pymetric-lib
+   :target: https://github.com/PyCQA/docformatter

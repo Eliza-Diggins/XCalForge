@@ -1,0 +1,6 @@
+library.SKELETON.MyCustomLibrary.build\_synthetic\_data
+=======================================================
+
+.. currentmodule:: library.SKELETON
+
+.. automethod:: MyCustomLibrary.build_synthetic_data

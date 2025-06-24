@@ -1,0 +1,6 @@
+xforge.utils.ConfigManager.\_\_init\_\_
+=======================================
+
+.. currentmodule:: xforge.utils
+
+.. automethod:: ConfigManager.__init__

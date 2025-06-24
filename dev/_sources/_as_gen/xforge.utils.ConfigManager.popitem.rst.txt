@@ -1,0 +1,6 @@
+xforge.utils.ConfigManager.popitem
+==================================
+
+.. currentmodule:: xforge.utils
+
+.. automethod:: ConfigManager.popitem

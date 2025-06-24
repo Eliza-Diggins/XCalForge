@@ -1,0 +1,6 @@
+xforge.utils.ConfigManager.items
+================================
+
+.. currentmodule:: xforge.utils
+
+.. automethod:: ConfigManager.items

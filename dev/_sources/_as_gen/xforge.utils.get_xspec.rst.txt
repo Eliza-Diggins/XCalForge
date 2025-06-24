@@ -1,0 +1,6 @@
+xforge.utils.get\_xspec
+=======================
+
+.. currentmodule:: xforge.utils
+
+.. autofunction:: get_xspec

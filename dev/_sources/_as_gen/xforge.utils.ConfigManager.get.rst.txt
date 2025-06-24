@@ -1,0 +1,6 @@
+xforge.utils.ConfigManager.get
+==============================
+
+.. currentmodule:: xforge.utils
+
+.. automethod:: ConfigManager.get

@@ -1,0 +1,6 @@
+library.SKELETON.MyCustomLibrary.generate\_unmodified\_configuration
+====================================================================
+
+.. currentmodule:: library.SKELETON
+
+.. automethod:: MyCustomLibrary.generate_unmodified_configuration

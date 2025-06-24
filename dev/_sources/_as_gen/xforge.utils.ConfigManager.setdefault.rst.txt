@@ -1,0 +1,6 @@
+xforge.utils.ConfigManager.setdefault
+=====================================
+
+.. currentmodule:: xforge.utils
+
+.. automethod:: ConfigManager.setdefault

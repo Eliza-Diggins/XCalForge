@@ -1,6 +1,0 @@
-library.base.ModificationLibrary.parameters
-===========================================
-
-.. currentmodule:: library.base
-
-.. autoproperty:: ModificationLibrary.parameters

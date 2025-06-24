@@ -1,6 +1,0 @@
-library.SKELETON.MyCustomLibrary.shape
-======================================
-
-.. currentmodule:: library.SKELETON
-
-.. autoproperty:: MyCustomLibrary.shape

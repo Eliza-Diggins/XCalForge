@@ -1,6 +1,0 @@
-library.SKELETON.MyCustomLibrary.temperatures
-=============================================
-
-.. currentmodule:: library.SKELETON
-
-.. autoproperty:: MyCustomLibrary.temperatures

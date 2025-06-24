@@ -1,6 +1,0 @@
-library.SKELETON.MyCustomLibrary.create\_rank\_output\_file
-===========================================================
-
-.. currentmodule:: library.SKELETON
-
-.. automethod:: MyCustomLibrary.create_rank_output_file

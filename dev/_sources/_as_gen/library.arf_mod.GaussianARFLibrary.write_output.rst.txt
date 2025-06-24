@@ -1,6 +1,0 @@
-library.arf\_mod.GaussianARFLibrary.write\_output
-=================================================
-
-.. currentmodule:: library.arf_mod
-
-.. automethod:: GaussianARFLibrary.write_output

@@ -43,6 +43,7 @@ Contents
 
    api
    reference/index
+   auto_examples/index
 
 Indices and Tables
 ------------------------------

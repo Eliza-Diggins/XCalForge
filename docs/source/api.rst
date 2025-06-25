@@ -16,5 +16,6 @@ Explore the structured API below:
    :recursive:
    :template: module.rst
 
-   library       # Core simulation and calibration tools
-   xforge.utils   # Utility functions (if applicable)
+   library
+   utilities
+   spectra

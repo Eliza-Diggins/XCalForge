@@ -1,0 +1,12 @@
+error:
+  threshold: 1.0
+input:
+  arf: /uufs/astro.utah.edu/common/home/u1088717/emma_eliza_collab/unmodified_arf.arf
+  rmf: /uufs/astro.utah.edu/common/home/u1088717/emma_eliza_collab/center_6102.rmf
+logging:
+  file_level: INFO
+  fmt: '%(asctime)s [%(levelname)s] [RANK=%(rank)s]: %(message)s'
+  level: DEBUG
+  term_level: INFO
+prog:
+  nsync: 1

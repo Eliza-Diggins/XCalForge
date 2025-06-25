@@ -17,7 +17,7 @@ Impetus
 
 Persistent discrepancies in X-ray temperature measurements across observatories such as
 **Chandra**, **XMM-Newton**, **NuSTAR**, and now **XRISM**, have motivated extensive
-cross-calibration efforts within the astrophysical community. Numerous studies have]
+cross-calibration efforts within the astrophysical community. Numerous studies have
 demonstrated that fitted plasma temperatures, particularly for hot galaxy clusters, vary systematically between instruments.
 For example, broad analyses by the IACHEC consortium and others have shown that **XMM-Newton's** EPIC detectors
 often yield temperatures up to 20–30% lower than those derived from **Chandra's** ACIS at high temperatures :cite:p:`Schellenberger2015`.

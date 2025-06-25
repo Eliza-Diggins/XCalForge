@@ -313,6 +313,10 @@ class ModificationLibrary(ABC):
 
             self.logger.addHandler(file_handler)
 
+        # Set the XSPEC logger so that we don't get XSPEC output
+        # to the stdout.
+        xspec.Xset.openLog(str(self.__directory__ / f"logs/xspec_rank_{rank}.log"))
+
     def __init_parameters__(self):
         """
         Loads the parameter arrays from the 'PARAMS' group in the HDF5 data file.
@@ -564,6 +568,7 @@ class ModificationLibrary(ABC):
         """
         try:
             self.clear_tempdir()
+            xspec.Xset.closeLog()
         except Exception:
             # Suppress all exceptions during interpreter shutdown
             pass

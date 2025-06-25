@@ -1,0 +1,75 @@
+# ---------------------------------------------------
+# XCalForge Default Configuration File
+# ---------------------------------------------------
+# This file provides default settings for XCalForge.
+# Users can override these defaults using:
+# - XCALFORGE_CONFIG environment variable
+# - .xcalforgerc in the project directory
+# - ~/.config/xcalforge/config.yaml
+#
+# Values in this file are safe defaults suitable for most environments.
+# ---------------------------------------------------
+core:
+  # Central settings for the behavior of XCalForge.
+  enable_mpi: true
+
+# ---------------------------------------------------
+logging:
+  # Logging configuration settings. These are overridden
+  # in library configurations and are only relevant as
+  # fallback.
+  main:
+    # Settings for the main logger accessed in utilities.logging.
+    level: INFO
+    format: "[XCalForge]-%(levelname)s: %(message)s"
+  library:
+    # Settings for the default logging behavior during library generation.
+    # This can generally be overriden on a class-by-class basis. Once
+    # initialized, these can be modified in the library's config file.
+    terminal_level: INFO
+    file_level: INFO
+    format: "%(asctime)s [%(levelname)s] [RANK=%(rank)s]: %(message)s"
+
+libgen:
+  # ----------------------------------------------------------------------
+  # Library generation settings.
+  # ----------------------------------------------------------------------
+  nsync: 1
+
+# ---------------------------------------------------
+xspec:
+  # ----------------------------------------------------------------------
+  # XSPEC Configuration for XCalForge
+  #
+  # These settings control how XCalForge interfaces with XSPEC for spectral
+  # modeling, fitting, and simulations.
+  #
+  # You can override these defaults via:
+  #   - XCALFORGE_CONFIG environment variable
+  #   - .xcalforgerc in your project directory
+  #   - ~/.config/xcalforge/config.yaml (per-user)
+  #
+  # Full configuration documentation:
+  # https://heasarc.gsfc.nasa.gov/docs/xanadu/xspec/manual/manual.html
+  # ----------------------------------------------------------------------
+  chatter: 0
+  # -------------------------------
+  # Fitting and Optimization
+  # -------------------------------
+  # Default fit statistic to use for XSPEC model fitting.
+  # Common options:
+  #   chi     = Chi-squared (default for Gaussian statistics)
+  #   cstat   = Cash statistic (for Poisson data)
+  #   pgstat  = Poisson-Gaussian hybrid statistic
+  #   lstat   = Likelihood-based statistic
+  fit_statistic: cstat
+  # Default test statistic to use for error estimation or simulations.
+  # This can be set independently of the fit statistic if needed.
+  test_statistic: chi
+  # Maximum allowed iterations for the XSPEC fitting engine.
+  # Prevents runaway fits; adjust for highly complex models if necessary.
+  max_fit_iterations: 100
+  # Fit convergence tolerance.
+  # Lower values = stricter convergence requirement (slower, more precise).
+  # Typically set to 1e-5 or smaller for precise work.
+  fit_convergence_tol: 1e-5

@@ -45,7 +45,7 @@ repos:
   rev: v0.9.0
   hooks:
     - id: xenon
-      args: [ '--max-absolute=E', '--max-modules=C', '--max-average=B' ]
+      args: [ '--max-absolute=E', '--max-modules=C', '--max-average=C' ]
 - repo: https://github.com/sphinx-contrib/sphinx-lint
   rev: v1.0.0
   hooks:

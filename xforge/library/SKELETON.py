@@ -1,10 +1,13 @@
-"""Skeleton template for custom library generation implementations.
 """
-from typing import Tuple
+Example implementation of a modification library for ARF calibration distortions.
+"""
+
+from pathlib import Path
+from typing import Sequence, Tuple, Union
 
 import numpy as np
 
-from xforge.utils import get_xspec
+from xforge.utilities.env import get_xspec
 
 from .base import ModificationLibrary
 
@@ -13,115 +16,162 @@ xspec = get_xspec()
 
 class MyCustomLibrary(ModificationLibrary):
     """
-    Example subclass of ModificationLibrary for a specific calibration modification study.
+    ModificationLibrary for simulating Gaussian perturbations to ARF files.
 
-    This subclass defines:
-    - Allowed hyperparameters
-    - Default configuration options
-    - All required hooks for synthetic data generation and fitting
+    Defines:
+    - Allowed hyperparameters (mu: bias center, sigma: bias width)
+    - Logic for generating distorted ARFs
+    - XSPEC model construction
+    - Fitting routines for temperature recovery analysis
     """
 
     # ------------------------------------ #
     # Required Class Flags                 #
     # ------------------------------------ #
     __PARAMETERS__ = ["mu", "sigma"]
-    """
-    Allowed parameter grid keys. Must match keys provided when creating the library.
-    """
 
     __CONFIG__ = {
-        "logging.file_level": "INFO",
+        "logging.file_level": "DEBUG",
         "logging.term_level": "INFO",
-        "logging.fmt": "%(asctime)s - %(levelname)s - %(message)s",
-        # Add project-specific defaults here
+        "logging.fmt": "%(asctime)s [%(levelname)s] [RANK=%(rank)s]: %(message)s",
     }
 
     __OUTPUT_SHAPE__ = (3,)
     """
-    Output shape for each grid point: (recovered_temp, fit_statistic, uncertainty).
-    Extend if needed.
+    (recovered_temperature, fit_statistic, uncertainty)
     """
 
     # ------------------------------------ #
-    # Required Initialization Hook         #
+    # Optional Post-Initialization         #
     # ------------------------------------ #
     def __post_init__(self):
         """
-        Optional post-initialization logic after base class loads parameters and config.
+        Ensure required response files exist and pre-cache baseline ARF path.
         """
-        pass  # Optional: Load extra resources or validate setup
+        self.baseline_rmf = Path("responses/default.rmf")
+        self.baseline_arf = Path("responses/default.arf")
+
+        if not self.baseline_rmf.exists() or not self.baseline_arf.exists():
+            raise FileNotFoundError("Baseline response files are missing.")
 
     # ------------------------------------ #
-    # Required Generation Hooks            #
+    # Required Configuration Generators    #
     # ------------------------------------ #
     def generate_unmodified_configuration(self, id: int, **parameters) -> dict:
         """
-        Return the unmodified telescope configuration for XSPEC fitting.
+        Baseline configuration used during recovery fits.
         """
-        return {
-            "response": "responses/default.rmf",
-            "arf": "responses/default.arf",
-            "exposure": 50_000,
-        }
+        ...
 
     def generate_modified_configuration(self, id: int, **parameters) -> dict:
         """
-        Return the modified telescope configuration for synthetic data generation.
+        Generate a Gaussian-distorted ARF for synthetic data.
         """
-        mu = parameters["mu"]
-        sigma = parameters["sigma"]
+        ...
 
-        # Example: Create distorted ARF based on parameters
-        arf_path = f"bin/distorted_mu{mu}_sigma{sigma}.arf"
-
-        return {
-            "response": "responses/default.rmf",
-            "arf": arf_path,
-            "exposure": 50_000,
-        }
-
+    # ------------------------------------ #
+    # XSPEC Model Builders                 #
+    # ------------------------------------ #
     def generate_model_unmodified(self, T: float, **parameters):
         """
-        Return the XSPEC model for unmodified configuration.
+        XSPEC model used for fitting with unmodified calibration.
         """
         return xspec.Model(f"tbabs*apec & kT={T}")
 
     def generate_model_modified(self, T: float, **parameters):
         """
-        Return the XSPEC model for modified configuration (typically same as unmodified).
+        XSPEC model used for synthetic data generation with modified calibration.
         """
         return xspec.Model(f"tbabs*apec & kT={T}")
 
+    # ------------------------------------ #
+    # Fitting Routines                     #
+    # ------------------------------------ #
     def fit_unmodified(self, config: dict, **parameters) -> Tuple[float, float, float]:
         """
-        Fit synthetic spectrum with unmodified configuration and extract results.
+        Fit spectrum with unmodified configuration and extract recovery results.
         """
-        # Example: Fake extraction, replace with real XSPEC logic
-        recovered_T = np.random.normal(loc=parameters["mu"], scale=parameters["sigma"])
-        fit_stat = np.random.uniform(0, 10)
-        uncertainty = np.random.uniform(0.01, 0.1)
+        spectrum = xspec.AllData(1)
+        spectrum.response = config["response"]
+        spectrum.arf = config["arf"]
+
+        xspec.Fit.perform()
+        recovered_T = float(xspec.AllModels(1).apec.kT.values[0])
+        fit_stat = float(xspec.Fit.statistic)
+        uncertainty = float(xspec.AllModels(1).apec.kT.sigma)
+
         return recovered_T, fit_stat, uncertainty
 
     def fit_modified(self, config: dict, **parameters) -> Tuple[float, float, float]:
         """
-        Optional: Fit with the modified configuration (sanity check).
+        Optional sanity check fit with the modified (distorted) configuration.
         """
-        true_T = parameters.get("true_temperature", 1.0)
-        fit_stat = np.random.uniform(0, 10)
-        uncertainty = np.random.uniform(0.01, 0.1)
-        return true_T, fit_stat, uncertainty
+        spectrum = xspec.AllData(1)
+        spectrum.response = config["response"]
+        spectrum.arf = config["arf"]
+
+        xspec.Fit.perform()
+        recovered_T = float(xspec.AllModels(1).apec.kT.values[0])
+        fit_stat = float(xspec.Fit.statistic)
+        uncertainty = float(xspec.AllModels(1).apec.kT.sigma)
+
+        return recovered_T, fit_stat, uncertainty
 
     # ------------------------------------ #
-    # Optional: Customize Output Format    #
+    # Optional Output Customization        #
     # ------------------------------------ #
-    def write_output(
-        self, result_mod, result_unmod, true_temperature: float, **parameters
+    def _write_output(
+        self,
+        result_mod: Union[Sequence[float], np.ndarray],
+        result_unmod: Union[Sequence[float], np.ndarray],
+        true_temperature: float,
+        **parameters,
     ) -> np.ndarray:
         """
-        Customize output format stored in the HDF5 library.
+        Default output: (recovered_temperature, fit_statistic, uncertainty)
         """
-        output = np.zeros(self.__OUTPUT_SHAPE__, dtype=float)
-        output[0] = result_unmod[0]  # Recovered temperature
-        output[1] = result_unmod[1]  # Fit statistic
-        output[2] = result_unmod[2]  # Uncertainty
+        output = np.full(self.__OUTPUT_SHAPE__, np.nan, dtype=float)
+
+        try:
+            output[0] = float(result_unmod[0])
+            output[1] = float(result_unmod[1])
+            output[2] = float(result_unmod[2])
+        except (IndexError, TypeError) as e:
+            raise ValueError(f"Invalid result_unmod format: {result_unmod}") from e
+
         return output
+
+    # ------------------------------------ #
+    # Recommended Cleanup Hooks            #
+    # ------------------------------------ #
+    def cleanup_temperature_iteration(
+        self, global_parameter_index: int, temperature_index: int
+    ):
+        """
+        Remove synthetic PHA files after each temperature simulation to limit disk usage.
+        """
+        synth_path = (
+            self.tempdir / f"synth.{global_parameter_index}.{temperature_index}.pha"
+        )
+        if synth_path.exists():
+            synth_path.unlink()
+            self.logger.debug("Deleted synthetic spectrum: %s", synth_path)
+
+    def cleanup_parameter_iteration(self, global_parameter_index: int):
+        """
+        Example cleanup: optionally remove temporary ARFs if generated per parameter.
+        """
+        mu = self.__parameters__["mu"]
+        sigma = self.__parameters__["sigma"]
+
+        # Reconstruct index for this parameter combination
+        midx = np.unravel_index(global_parameter_index, self.shape)
+        mu_val = mu[midx[self.__PARAMETERS__.index("mu")]]
+        sigma_val = sigma[midx[self.__PARAMETERS__.index("sigma")]]
+
+        distorted_arf = (
+            self.__bindir__ / f"distorted_mu{mu_val:.3f}_sigma{sigma_val:.3f}.arf"
+        )
+        if distorted_arf.exists():
+            distorted_arf.unlink()
+            self.logger.debug("Deleted distorted ARF: %s", distorted_arf)

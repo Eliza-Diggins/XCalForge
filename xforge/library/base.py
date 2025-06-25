@@ -5,20 +5,48 @@ These are the base classes for generating the modification libraries
 which are then used to train the interpolators.
 """
 import logging
+import os
+import tempfile
+import time
+import traceback
 from abc import ABC, abstractmethod
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence, Tuple, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Sequence, Tuple, Union
 
 import h5py
 import numpy as np
 
-from xforge.utils import ConfigManager, get_mpi, get_xspec
+from xforge.spectra import generate_synthetic_spectrum, group_min_counts
+from xforge.utilities import (
+    ConfigManager,
+    RankFormatter,
+    clear_xspec,
+    get_mpi,
+    get_xspec,
+    spec_logger,
+    xcfconfig,
+)
+
+from .utils import ProgressMonitor, sync_progress
+
+# ---------------------------------- #
+# Type Checking                      #
+# ---------------------------------- #
+if TYPE_CHECKING:
+    # import special types and type hints so that they
+    # are readable to static type checkers.
+    from mpi4py.MPI import Comm
 
 # Ensure access to XSPEC via PyXSPEC. This needs
 # to be done carefully because there can only be one CLI active
 # per process.
 xspec = get_xspec()
+MPI: Any = get_mpi(comm_world=False)
+
+# -------------------------------------- #
+# Modification Library Base Class        #
+# -------------------------------------- #
 
 
 class ModificationLibrary(ABC):
@@ -95,9 +123,10 @@ class ModificationLibrary(ABC):
     """
 
     __CONFIG__: Dict[str, Any] = {
-        "logging.file_level": "INFO",
-        "logging.term_level": "INFO",
-        "logging.fmt": "%(asctime)s - %(levelname)s - %(message)s",
+        "logging.file_level": xcfconfig["logging.library.file_level"],
+        "logging.term_level": xcfconfig["logging.library.terminal_level"],
+        "logging.fmt": xcfconfig["logging.library.format"],
+        "prog.nsync": xcfconfig["libgen.nsync"],
     }
     """
     Default configuration dictionary for the library.
@@ -113,6 +142,7 @@ class ModificationLibrary(ABC):
 
     Subclasses can extend this to provide additional default options relevant to the specific modification model.
     """
+
     __OUTPUT_SHAPE__: Tuple[int, ...] = (3,)
     """
     Shape of the stored output for each parameter-temperature grid point.
@@ -190,7 +220,7 @@ class ModificationLibrary(ABC):
 
         self.__post_init__()
 
-        self.logger.info("Loading Library @ %s.", self.__directory__)
+        self.logger.info("Loaded Library @ %s.", self.__directory__)
 
     def __validate_structures__(self):
         """
@@ -210,6 +240,7 @@ class ModificationLibrary(ABC):
             If any required file or directory is missing (aside from cache/bin which will be created).
         """
         self.__cachedir__ = self.__directory__ / "cache"
+        self.__tempdir__ = None
         self.__bindir__ = self.__directory__ / "bin"
         self.__logdir__ = self.__directory__ / "logs"
         self.__configpath__ = self.__directory__ / "config.yaml"
@@ -240,53 +271,47 @@ class ModificationLibrary(ABC):
         """
         Loads the configuration file using the `ConfigManager` class.
         """
-        from xforge.utils import (  # Local import to avoid cyclic dependency
-            ConfigManager,
-        )
-
         self.__config__ = ConfigManager(self.__configpath__)
 
     def __init_logger__(self):
         """
-        Initializes the internal logger for the library.
-        Sets up both per-rank log files and (optionally) console output for rank 0.
+        Sets up:
+
+        - self.logger: Logs to file with full formatting
+        - self.console_logger: Plain console output, used explicitly by user code
+
+        Logging behavior is explicit. No hidden rank-based console suppression.
         """
-        # Obtain the name of the logger and load in
-        # MPI to check what configuration system we're going
-        # to be using.
-        comm = get_mpi()
-        rank = comm.Get_rank()
+        from xforge.utilities.env import get_mpi
 
-        logger_name = f"Library.{self.__directory__.name}"
+        # Resolve necessary logger information before proceeding with
+        # the setup procedures.
+        comm: "Comm" = get_mpi()
+        rank: int = comm.Get_rank()
+        logger_name = f"Library.{self.__directory__.name}.Rank{rank}"
 
-        # Configure for parallelism
-        self.logger = logging.getLogger(logger_name + f".{rank}")
+        # Configure the rank specific logger for this MPI rank.
+        # This is the logger that should be used for most purposes.
+        # By default, only very high level warnings and errors on this
+        # logger will go to stdout. Everything else is dumped to files in
+        # the logs.
+        self.logger = logging.getLogger(logger_name)
         self.logger.setLevel(self.config.get("logging.file_level", logging.DEBUG))
+        self.logger.propagate = False  # Avoid duplicating to root logger
 
-        # Avoid adding multiple handlers if already initialized
-        if self.logger.hasHandlers():
-            return
-
-        # construct the formatter.
-        fmt = self.config.get(
-            "logging.fmt", "%(asctime)s - %(levelname)s - %(message)s"
-        )
-        formatter = logging.Formatter(fmt)
-
-        # Create the output log file.
-        logfile = self.__directory__ / f"logs/rank_{rank}.log"
-        filehandler = logging.FileHandler(logfile, mode="w")
-        filehandler.setLevel(self.config.get("logging.level", logging.DEBUG))
-        filehandler.setFormatter(formatter)
-        self.logger.addHandler(filehandler)
-
-        if rank == 0:
-            console_handler = logging.StreamHandler()
-            console_handler.setLevel(
-                self.config.get("logging.term_level", logging.DEBUG)
+        if not self.logger.hasHandlers():
+            fmt = self.config.get(
+                "logging.fmt",
+                "%(asctime)s [%(levelname)s] [RANK=%(rank)s]: %(message)s",
             )
-            console_handler.setFormatter(formatter)
-            self.logger.addHandler(console_handler)
+            formatter = RankFormatter(fmt, rank=rank)
+
+            logfile = self.__directory__ / f"logs/rank_{rank}.log"
+            file_handler = logging.FileHandler(logfile, mode="w")
+            file_handler.setLevel(self.config.get("logging.level", logging.DEBUG))
+            file_handler.setFormatter(formatter)
+
+            self.logger.addHandler(file_handler)
 
     def __init_parameters__(self):
         """
@@ -306,7 +331,7 @@ class ModificationLibrary(ABC):
             if "PARAMS" not in f:
                 raise KeyError(f"'PARAMS' group not found in {self.__datapath__}")
 
-            param_group: h5py.Group = f["PARAMS"]
+            param_group: h5py.Group = f["PARAMS"]  # type: ignore[index]
 
             # Iterate through the keys and select only the
             # permissible parameters. Then ensure that all parameters
@@ -323,7 +348,7 @@ class ModificationLibrary(ABC):
 
                 # If they key is known, they we extract the
                 # data and set it.
-                self.__parameters__[key] = param_group[key][...]
+                self.__parameters__[key] = param_group[key][...]  # type: ignore[index]
 
         # Finally, ensure that all of the necessary parameters
         # are specified. If they are not, we raise an error.
@@ -332,7 +357,43 @@ class ModificationLibrary(ABC):
 
     @abstractmethod
     def __post_init__(self):
-        pass
+        """
+        Perform subclass-specific initialization logic after the base library is loaded.
+
+        This method is called automatically at the end of `__init__`, after the following steps:
+
+        - The library directory structure has been validated.
+        - The configuration file (`config.yaml`) has been loaded.
+        - The logger has been initialized with rank-aware output.
+        - The parameter grid has been loaded from the HDF5 data file.
+
+        Subclasses can override this method to:
+
+        - Perform additional sanity checks specific to the modification model.
+        - Load supplementary resources (e.g., precomputed files, model templates).
+        - Configure internal attributes required for the generation process.
+        - Adjust default configuration entries before simulation begins.
+
+        Notes
+        -----
+        - This method should avoid heavy operations like file I/O unless strictly necessary.
+        - It should NOT initiate simulations, fitting, or XSPEC operations.
+        - Always call `super().__post_init__()` in subclass overrides to preserve base functionality if applicable.
+
+        Example
+        -------
+        A subclass might implement:
+
+        .. code-block:: python
+
+            def __post_init__(self):
+                super().__post_init__()
+                self.my_model_path = self.__bindir__ / "baseline_model.xcm"
+                if not self.my_model_path.exists():
+                    raise FileNotFoundError("Baseline model not found: {self.my_model_path}")
+
+        """
+        ...
 
     # ============================ #
     # Building Libraries.          #
@@ -371,6 +432,9 @@ class ModificationLibrary(ABC):
         config : dict, optional
             Optional dictionary of configuration values to write to `config.yaml`.
             These override defaults defined in `__CONFIG__`.
+        args, kwargs:
+            Additional arguments and kwargs for subclass implementations.
+
 
         Returns
         -------
@@ -385,16 +449,33 @@ class ModificationLibrary(ABC):
         import gc
         import shutil
 
+        # Resolve the specified directory in
+        # which to create the new library.
         directory = Path(directory).expanduser().resolve()
 
-        # Handle overwrite logic
+        # Check for overwrite. The try, except structure here is
+        # present to catch issues when file systems leave hanging files
+        # that catch shutil.
         if directory.exists():
             if not overwrite:
                 raise ValueError(
-                    f"Directory `{directory}` already exists. Use `overwrite=True` to recreate it."
+                    f"Directory `{directory}` already exists. "
+                    "Use `overwrite=True` to recreate it."
                 )
-            gc.collect()
-            shutil.rmtree(directory)
+
+            # Attempt to remove the existing
+            # directory but accept failure if we are not
+            # able to successfully do so.
+            try:
+                gc.collect()
+                shutil.rmtree(directory)
+            except Exception as e:
+                raise OSError(
+                    f"Failed to delete directory {directory}.\n"
+                    "This is likely the result of hanging references in the directory"
+                    "due to file system behavior, not XCalForge. Try deleting manually.\n"
+                    f"Error: {e}"
+                )
 
         # Create required subdirectories and files
         cls.__create_structures__(directory)
@@ -402,6 +483,7 @@ class ModificationLibrary(ABC):
         cls.__write_config__(directory, config=config)
 
         # Instantiate and return the initialized library
+        spec_logger.info("Created library @ %s. (Class=%s)", directory, cls.__name__)
         return cls(directory)
 
     @classmethod
@@ -459,8 +541,6 @@ class ModificationLibrary(ABC):
         config : dict, optional
             Optional dictionary of configuration values. May contain dotted or nested keys.
         """
-        from xforge.utils import ConfigManager
-
         config_path = Path(directory) / "config.yaml"
         cfg = ConfigManager(config_path, autosave=True)
 
@@ -471,6 +551,22 @@ class ModificationLibrary(ABC):
 
         for key, value in merged_config.items():
             cfg[key] = value
+
+    # ========================== #
+    # Dunder Methods             #
+    # ========================== #
+    def __del__(self):
+        """
+        Destructor to clean up temporary directories when the instance is deleted.
+
+        This attempts to remove the per-rank temporary directory if it exists.
+        Non-fatal errors during deletion are suppressed to avoid interfering with interpreter shutdown.
+        """
+        try:
+            self.clear_tempdir()
+        except Exception:
+            # Suppress all exceptions during interpreter shutdown
+            pass
 
     # ========================== #
     # Properties                 #
@@ -564,8 +660,40 @@ class ModificationLibrary(ABC):
             return None
 
         with h5py.File(self.__assets__["data"], "r") as f:
-            return f["LIBRARY"]["temps"][...]
+            return f["LIBRARY"]["temps"][...]  # type: ignore[index]
 
+    @property
+    def tempdir(self) -> Path:
+        """
+        Node-local, per-rank temporary working directory.
+
+        Uses $TMPDIR if available (e.g., on HPC clusters),
+        falls back to system default via tempfile.gettempdir().
+
+        The directory is isolated by:
+        - Library name
+        - MPI rank
+
+        Returns
+        -------
+        Path
+            Path to the node-local temporary directory for this rank.
+        """
+        if self.__tempdir__ is None:
+            tmp_root = os.environ.get("TMPDIR", tempfile.gettempdir())
+            comm = get_mpi()
+            rank = comm.Get_rank()
+
+            self.__tempdir__ = Path(tmp_root) / f"{self.__directory__.name}_rank_{rank}"
+            self.__tempdir__.mkdir(parents=True, exist_ok=True)
+        else:
+            pass
+
+        return self.__tempdir__
+
+    # ------------------------------------ #
+    # Utility Methods                      #
+    # ------------------------------------ #
     @contextmanager
     def library(self, mode: str = "r"):
         """
@@ -606,7 +734,57 @@ class ModificationLibrary(ABC):
 
         with h5py.File(self.__assets__["data"], mode) as f:
             lib_group = f["LIBRARY"]
-            yield lib_group["results"], lib_group["temps"]
+            yield lib_group["results"], lib_group["temps"]  # type: ignore[index]
+
+    def set_logging_level(
+        self, level: Union[int, str], handlers: Optional[List[logging.Handler]] = None
+    ):
+        """
+        Update the logging level for the library logger and its handlers.
+
+        Parameters
+        ----------
+        level : int or str
+            Desired logging level (e.g., logging.DEBUG or "DEBUG").
+        handlers : list[logging.Handler], optional
+            List of specific handlers to update. If None, all attached handlers are updated.
+        """
+        import logging
+
+        # Update the config for persistence
+        level = logging.getLevelName(level) if isinstance(level, int) else level
+        self.config["logging.level"] = level
+
+        # Update logger level
+        self.logger.setLevel(level)
+
+        # Select handlers
+        target_handlers = handlers if handlers is not None else self.logger.handlers
+
+        # Update handler levels
+        for h in target_handlers:
+            h.setLevel(level)
+
+        self.logger.debug("Logger level set to %s.", logging.getLevelName(level))
+
+    def clear_tempdir(self):
+        """
+        Completely removes the per-rank temporary directory and resets internal state.
+
+        The directory will be recreated automatically on next access.
+        """
+        import shutil
+
+        if self.__tempdir__ is not None and self.__tempdir__.exists():
+            try:
+                shutil.rmtree(self.__tempdir__)
+                self.logger.debug("Deleted tempdir: %s", self.__tempdir__)
+            except Exception as e:
+                self.logger.warning(
+                    "Failed to delete tempdir %s: %s", self.__tempdir__, e
+                )
+
+        self.__tempdir__ = None
 
     # ================================ #
     # Library Generation - User Hooks  #
@@ -775,7 +953,9 @@ class ModificationLibrary(ABC):
         """
         ...
 
-    # -- Tooling -- #
+    # ================================ #
+    # Library Generation - Tooling.    #
+    # ================================ #
     # These are methods which are used as tools in the generation
     # of the library but which don't generally require modification.
     def assign_mpi_load(self, mpi_size, mpi_rank) -> Tuple[int, int]:
@@ -794,27 +974,26 @@ class ModificationLibrary(ABC):
         stop : int
             Exclusive stop index in the global flattened parameter grid for this rank.
         """
-        # Compute base chunk size and remainder
+        # Compute base chunk size and remainder. Use the
+        # computed value to get the starts and stops.
         q, r = divmod(self.size, mpi_size)
-
-        # Determine the number of items for each rank
         chunk_sizes = [q + 1 if i < r else q for i in range(mpi_size)]
 
-        # Compute prefix sums to get start/stop indices
         starts = np.cumsum([0] + chunk_sizes[:-1])
         stops = np.cumsum(chunk_sizes)
 
+        # Log the assignment and then return the
+        # starting and stopping indices.
         self.logger.debug(
-            "Assigned process %s to %s parameters from %s to %s.",
-            mpi_rank,
-            stops[mpi_rank] - starts[mpi_rank],
+            "[LOAD ASSIGNMENT] [%s,%s] N=%s.",
             starts[mpi_rank],
             stops[mpi_rank],
+            stops[mpi_rank] - starts[mpi_rank],
         )
 
         return int(starts[mpi_rank]), int(stops[mpi_rank])
 
-    def create_rank_output_file(
+    def _create_rank_output_file(
         self, start: int, stop: int, temperatures: Sequence[float], mpi_rank
     ) -> Path:
         """
@@ -853,7 +1032,6 @@ class ModificationLibrary(ABC):
         # Now build the dataset. To do so, we open the
         # HDF5 file and insert a dataset in the main directory
         # containing the data.
-        self.logger.info("Building output file: %s.", filepath)
         with h5py.File(filepath, "w") as fio:
             # Determine how many temperature samples
             # we're taking in order to build the array.
@@ -870,15 +1048,16 @@ class ModificationLibrary(ABC):
             fio.attrs["temperature_count"] = Ntemp
             fio.attrs["parameter_count"] = stop - start
 
+        self.logger.debug("[RANK OUTPUT] Built output file: %s.", filepath)
         return filepath
 
-    def build_synthetic_data(self, idx: int, tidx: int, T, config, **parameters):
+    def _build_synthetic_data(self, idx: int, tidx: int, T, config, **parameters):
         """
         Generate synthetic photon data for a given parameter combination and temperature.
 
-        This method uses the modified configuration and model to simulate a synthetic
-        observation via XSPEC's `fakeit` functionality. It saves the generated spectrum
-        to a `.pha` file and returns the loaded data.
+        Uses the modified configuration and model to simulate a synthetic observation via XSPEC's
+        `fakeit` functionality. Saves the generated spectrum to a `.pha` file, applies grouping,
+        and returns the path to the rebinned spectrum.
 
         Parameters
         ----------
@@ -895,89 +1074,132 @@ class ModificationLibrary(ABC):
 
         Returns
         -------
-        xspec.Spectrum
-            The synthetic XSPEC spectrum loaded into memory.
-
-        Notes
-        -----
-        This function clears all existing XSPEC models and data, both before
-        and after generating the synthetic dataset.
+        Path
+            Path to the generated, grouped synthetic `.pha` file.
         """
-
-        # Clear all existing XSPEC states
-        xspec.AllModels.clear()
-        xspec.AllData.clear()
-
-        # Construct the model and set it as the
-        _ = self.generate_model_modified(T, **parameters)
-
-        # Generate synthetic spectrum using mod_config and mod_model
-        synth_dir = self.__cachedir__ / "synth"
+        # Prepare output path
+        synth_dir = self.tempdir
         synth_dir.mkdir(parents=True, exist_ok=True)
-        synth_path = synth_dir / f"synth_{idx}_{tidx}.pha"
-        xspec.AllData.clear()
-        fakeit = xspec.FakeitSettings(
+        synth_path = synth_dir / f"synth.{idx}.{tidx}.pha"
+
+        # Generate synthetic spectrum
+        generate_synthetic_spectrum(
+            synth_path,
+            model_generator=lambda: self.generate_model_modified(T, **parameters),
             response=config["response"],
             arf=config["arf"],
             exposure=config.get("exposure", 50_000),
             background=config.get("background", ""),
             correction=config.get("correction", ""),
             backExposure=config.get("backExposure", ""),
-            fileName=str(synth_path),
+            overwrite=True,
         )
 
-        # Clear existing spectra to avoid collisions
-        xspec.AllData.fakeit(1, [fakeit])
+        # Apply grouping to mimic grppha behavior
+        group_min_counts(synth_path, pha_path_out=None, min_counts=3, overwrite=True)
 
-        logging.info(
-            "Created synthetic data (%s,%s) with parameters %s.",
-            idx,
-            tidx,
-            str(parameters),
-        )
+        return synth_path
 
-        # Return the generated synthetic datasets
-        return xspec.AllData(1)
+    def _write_output(
+        self,
+        result_mod: Union[Sequence[float], np.ndarray],
+        result_unmod: Union[Sequence[float], np.ndarray],
+        true_temperature: float,
+        **parameters,
+    ) -> np.ndarray:
+        """
+        Construct the result array to store for a grid point.
+
+        This provides the default logic for saving recovery results:
+        - Recovered temperature from unmodified configuration
+        - Fit statistic
+        - Uncertainty estimate
+
+        Subclasses may override to include additional outputs (e.g., diagnostics, multiple fit results).
+
+        Parameters
+        ----------
+        result_mod : Sequence[float] or np.ndarray
+            Fit results using the modified configuration (sanity check).
+        result_unmod : Sequence[float] or np.ndarray
+            Fit results using the unmodified configuration (primary recovery).
+        true_temperature : float
+            True input temperature used to generate the synthetic spectrum.
+        **parameters : dict
+            Parameter values for this grid point (provided for optional subclass use).
+
+        Returns
+        -------
+        np.ndarray
+            Array of shape `__OUTPUT_SHAPE__` containing results to store.
+
+        Notes
+        -----
+        - The returned array must exactly match `__OUTPUT_SHAPE__`.
+        - Default implementation assumes shape (3,), storing:
+            [recovered temperature, fit statistic, uncertainty]
+        - Subclasses should explicitly document and control their storage layout if overriding.
+        """
+        output = np.full(self.__OUTPUT_SHAPE__, np.nan, dtype=float)
+
+        if self.__OUTPUT_SHAPE__ == (3,):
+            try:
+                output[0] = float(result_unmod[0])  # Recovered temperature
+                output[1] = float(result_unmod[1])  # Fit statistic
+                output[2] = float(result_unmod[2])  # Uncertainty
+            except (IndexError, TypeError) as e:
+                raise ValueError(f"Invalid result_unmod format: {result_unmod}") from e
+        else:
+            raise NotImplementedError(
+                f"Subclasses with custom __OUTPUT_SHAPE__={self.__OUTPUT_SHAPE__} "
+                "must override `write_output` to define storage behavior."
+            )
+
+        return output
 
     def _finalize_library(self, temperatures: Sequence[float], mpisize: int):
         """
-        Finalize the generation of the synthetic library by merging results
-        from all MPI ranks using Dask and writing into the HDF5 file.
+        Merge per-rank results into final library and clean up temporary files.
 
         Parameters
         ----------
         temperatures : Sequence[float]
-            The array of simulated temperatures.
+            Array of simulated temperatures.
         mpisize : int
-            The total number of MPI processes used in the generation.
+            Total number of MPI processes.
         """
         import dask.array as da
-        from dask import compute
         from dask.array.core import slices_from_chunks
+        from dask.base import compute
 
-        self.logger.info("Finalizing library with Dask...")
+        # Perform some basic setup operations. Log that this
+        # is occuring and get the list of dask arrays and
+        # datasets ready.
+        self.logger.info("Finalizing library using Dask...")
         Ntemp = len(temperatures)
         output_dir = self.__cachedir__ / "outputs"
 
         datasets = []
-        darrs = []
+        dask_arrays = []
 
+        # Begin the merger process. We seek each rank of
+        # the operation and its datafile. For each, we merge
+        # the resulting dask array and then drop the data
+        # into the full output.
         try:
-            # Load all per-rank result datasets as Dask arrays
+            # Load rank-specific outputs as Dask arrays
             for rank in range(mpisize):
-                file_path = output_dir / f"libgen_rank_{rank}.h5"
-                f = h5py.File(file_path, "r")
+                path = output_dir / f"libgen_rank_{rank}.h5"
+                f = h5py.File(path, "r")
                 datasets.append(f)
+                dask_arrays.append(da.from_array(f["results"], chunks="auto"))
 
-                dset = f["results"]
-                darrs.append(da.from_array(dset, chunks="auto"))
+            # Combine and reshape
+            combined = da.concatenate(dask_arrays, axis=0)
+            expected_shape = (*self.shape, Ntemp, *self.__class__.__OUTPUT_SHAPE__)
+            reshaped = combined.reshape(expected_shape)
 
-            # Concatenate and reshape
-            flat_dask_array = da.concatenate(darrs, axis=0)
-            full_shape = (*self.shape, Ntemp, *self.__class__.__OUTPUT_SHAPE__)
-            reshaped = flat_dask_array.reshape(full_shape)
-
-            # Write to final HDF5 file
+            # Write to final library file
             with h5py.File(self.__datapath__, "a") as f:
                 if "LIBRARY" in f:
                     del f["LIBRARY"]
@@ -986,69 +1208,70 @@ class ModificationLibrary(ABC):
                     "temps", data=np.array(temperatures), dtype="f8"
                 )
 
-                result_ds = lib_group.create_dataset(
-                    "results", shape=reshaped.shape, dtype="f8", compression="gzip"
+                results = lib_group.create_dataset(
+                    "results", shape=expected_shape, dtype="f8", compression="gzip"
                 )
 
-                # Write each chunk block-by-block to avoid memory overuse
-                for block, slices in zip(
+                # Efficient block-wise write to limit memory spikes
+                for block, s in zip(
                     reshaped.to_delayed().flatten(), slices_from_chunks(reshaped.chunks)
                 ):
-                    result_ds[slices] = compute(block)[0]
+                    results[s] = compute(block)[0]
 
-            self.logger.info("Library written to: %s", self.__datapath__)
+            self.logger.info("Library finalized at %s", self.__datapath__)
 
         finally:
-            # Close all HDF5 datasets
+            # Close HDF5 handles
             for f in datasets:
                 f.close()
 
-            # Clean up per-rank output files
+            # Remove temporary rank files
             for rank in range(mpisize):
-                file_path = output_dir / f"libgen_rank_{rank}.h5"
-                if file_path.exists():
-                    file_path.unlink()
-                    self.logger.debug("Deleted %s", file_path)
+                path = output_dir / f"libgen_rank_{rank}.h5"
+                if path.exists():
+                    path.unlink()
+                    self.logger.debug("Deleted %s", path)
 
         self.logger.info("Library finalization complete.")
 
-    def write_output(
-        self,
-        result_mod: Union[Tuple, np.ndarray],
-        result_unmod: Union[Tuple, np.ndarray],
-        true_temperature: float,
-        **parameters,
-    ) -> np.ndarray:
+    def cleanup_temperature_iteration(
+        self, global_parameter_index: int, temperature_index: int
+    ):
         """
-        Construct the array to store in the results dataset for this grid point.
+        Optional hook to clean up after each temperature iteration.
+
+        Default behavior: removes synthetic PHA files to limit disk usage.
+
+        Subclasses may extend this for additional cleanup tasks.
 
         Parameters
         ----------
-        result_mod : tuple or array-like, optional
-            Fit results using the modified configuration (e.g., sanity check).
-        result_unmod : tuple or array-like, optional
-            Fit results using the unmodified configuration (primary target).
-        true_temperature : float
-            The true input temperature used in the synthetic simulation.
-        **parameters : dict
-            Dictionary of parameter values at this grid point.
-
-        Returns
-        -------
-        np.ndarray
-            Array matching `__OUTPUT_SHAPE__` to store in the results dataset.
-
-        Notes
-        -----
-        The default implementation stores the recovered unmodified temperature,
-        fit statistic, and uncertainty. Subclasses may override to customize outputs.
+        global_parameter_index : int
+            Flattened index into the parameter grid.
+        temperature_index : int
+            Index of the current temperature in the temperatures array.
         """
-        output = np.zeros(self.__OUTPUT_SHAPE__, dtype=float)
-        output[0] = result_unmod[0]  # Recovered temperature
-        output[1] = result_unmod[1]  # Fit statistic
-        output[2] = result_unmod[2]  # Uncertainty
+        synth_path = (
+            self.tempdir / f"synth.{global_parameter_index}.{temperature_index}.pha"
+        )
+        if synth_path.exists():
+            synth_path.unlink()
+            self.logger.debug("Deleted synthetic spectrum: %s", synth_path)
 
-        return output
+    def cleanup_parameter_iteration(self, global_parameter_index: int):
+        """
+        Optional hook to clean up after completing all temperatures for a parameter point.
+
+        Default: no-op.
+
+        Subclasses may override to delete temporary files, cached models, etc.
+
+        Parameters
+        ----------
+        global_parameter_index : int
+            Flattened index into the parameter grid.
+        """
+        pass  # Subclasses can override if needed
 
     # ------------------------------- #
     # Simulation                      #
@@ -1078,7 +1301,6 @@ class ModificationLibrary(ABC):
         - Results include recovery errors based on the unmodified instrument configuration, mimicking real-world inference biases.
         - The library must be finalized on rank 0 after all ranks complete.
         """
-
         # @@ Configure the run @@ #
         # On this processor, we're going to configure the run by
         # determining the relevant start and stop indices and
@@ -1087,146 +1309,263 @@ class ModificationLibrary(ABC):
         _mpirank = _mpicomm.Get_rank()
         _mpisize = _mpicomm.Get_size()
 
-        # Determine range of parameter indices for this rank
-        pstart_idx, pstop_idx = self.assign_mpi_load(_mpisize, _mpirank)
+        _prog_monitor: ProgressMonitor = None  # type: ignore
+        if _mpirank == 0:
+            # Provide some information to the log about
+            # the overall run.
+            print("\n\n====================================================")
+            print("Running `generate_library` on %s." % self.__directory__.name)
+            print("")
+            print("RUN PARAMETERS:")
+            print("---------------")
+            print("  MPI PROCS = %s" % _mpisize)
+            print("  TEMPS = %s" % len(temperatures))
+            print("  NSIMS = %s" % self.size)
+            print("====================================================")
 
-        # Open output file and get write handle
-        data_file = self.create_rank_output_file(
+            # Setup the monitor.
+            _prog_monitor = ProgressMonitor(
+                _mpisize,
+                library_name=self.__directory__.name,
+            )
+
+        # Configure the start and stop point for
+        # this process and construct the datafile into
+        # which this process stores its data.
+        pstart_idx, pstop_idx = self.assign_mpi_load(_mpisize, _mpirank)
+        data_file = self._create_rank_output_file(
             pstart_idx, pstop_idx, temperatures, _mpirank
         )
+        self.clear_tempdir()
 
-        with h5py.File(data_file, "a") as df:
-            # @@ Iterate through run @@ #
-            # We now iterate through the run of indices and
-            # perform the analysis at each index.
-            __NOP_TOTAL__ = (pstop_idx - pstart_idx) * len(temperatures)
-            for lidx, gidx in enumerate(range(pstart_idx, pstop_idx)):
-                self.logger.debug("Start iteration (%s,%s).", lidx, gidx)
-                # Construct the N-dim index from the gidx so that we can access
-                # the parameter dictionary given our position in the workload.
-                midx = np.unravel_index(gidx, self.shape)
-                iteration_parameters = {
-                    paramkey: paramvalue[midx[param_idx]]
-                    for param_idx, (paramkey, paramvalue) in enumerate(
-                        self.__parameters__.items()
-                    )
-                }
+        # Compute some private variables for use in
+        # tracking, logging, etc. going forward.
+        _num_simulations_rank = (pstop_idx - pstart_idx) * len(temperatures)
+        _num_params = pstop_idx - pstart_idx
+        _rank_info = (pstart_idx, pstop_idx)
 
-                # Generate the configurations for this parameter set. These
-                # are going to be used during the fitting procedure.
-                mod_config = self.generate_modified_configuration(
-                    gidx, **iteration_parameters
-                )
-                unmod_config = self.generate_unmodified_configuration(
-                    gidx, **iteration_parameters
-                )
-
-                # @@ Enter Temperature Loop @@ #
-                # Now for each of the library parameter values, we iterate over all
-                # of the temperatures in order to sample the parameter space.
-                for tid, T in enumerate(temperatures):
-                    self.logger.debug("Start temperature iteration %s.", tid)
-                    # Build the modified model so that we can use it
-                    # to create the synthetic data.
-                    _ = self.generate_model_modified(T, **iteration_parameters)
-
-                    # Build the synthetic data.
-                    self.build_synthetic_data(
-                        gidx, tid, T, mod_config, **iteration_parameters
-                    )
-
-                    # Fit using unmodified model
-                    result_mod = self.fit_modified(mod_config)
-
-                    # Clear the model and rebuild with the
-                    # unmodified
-                    xspec.AllModels.clear()
-                    _ = self.generate_model_unmodified(T, **iteration_parameters)
-
-                    # Build the mod result
-                    result_unmod = self.fit_unmodified(unmod_config)
-
-                    # Construct output
-                    output = self.write_output(
-                        result_mod=result_mod,
-                        result_unmod=result_unmod,
-                        true_temperature=T,
-                        **iteration_parameters,
-                    )
-
-                    # Optionally: fit using modified model (if relevant)
-                    # mod_result = self.fit_modified()
-
-                    # Store result
-                    df["results"][lidx, tid, :] = output
-
-                    # Determine % complete on this process.
-                    __PERCNT_DONE__ = (
-                        100 * (lidx * len(temperatures) + tid) / __NOP_TOTAL__
-                    )
-
-                    self.logger.info(
-                        "[Rank %d] Iter %d/%d | ParamIdx: %d | TempIdx: %d | Progress: %.2f%%",
-                        _mpirank,
-                        lidx + 1,
-                        pstop_idx - pstart_idx,
-                        gidx,
-                        tid,
-                        __PERCNT_DONE__,
-                    )
-
-                    self.logger.debug("Start temperature iteration %s. [DONE]", tid)
-
-                self.logger.debug("Start iteration (%s,%s). [DONE]", lidx, gidx)
-
-        # We now exit except for the RANK-0 process, which will complete by
-        # combining the relevant data files and cleaning up the environment.
+        # Gather from all MPI ranks and print a summary to
+        # the stdout.
+        _all_rank_info = _mpicomm.gather(_rank_info, root=0)
         if _mpirank == 0:
-            try:
-                self._finalize_library(temperatures, _mpisize)
-            finally:
-                if clear_cache:
-                    import shutil
+            print("\nParameter Space Assignment Summary:")
+            print("===============================================")
+            print(f"{'Rank':>4} | {'Param IDs':<19} | {'Simulations':>10}")
+            print("-----------------------------------------------")
+            for r, (start, stop) in enumerate(_all_rank_info):  # type: ignore
+                num = (stop - start) * len(temperatures)
+                print(f"{r:>4} | [{start:>7} , {stop:<7}) | {num:>10}")
+            print("===============================================\n")
 
-                    shutil.rmtree(self.__assets__["cache"])
-                    self.__assets__["cache"].mkdir(parents=True, exist_ok=True)
+        # --------------------------- #
+        # Begin Simulation Run.       #
+        # --------------------------- #
+        # This section of the code performs the central iterations
+        # through the parameter space and over the relevant temperatures
+        # to fill in the data.
+        try:
+            with h5py.File(data_file, "a") as df:
+                # Iterate through each of the local and global
+                # parameter indices so that the simlation may be
+                # performed at each iteration.
+                _simulations_completed = 0
+                _progress = 0
+                _is_complete = False
+                for lidx, gidx in enumerate(range(pstart_idx, pstop_idx)):
+                    # log the loop start information.
+                    _parameter_start_time = time.perf_counter()
+                    self.logger.info(
+                        "[Param %5d] (%4d / %4d) | Progress: %6.2f%%",
+                        gidx,
+                        lidx + 1,
+                        _num_params,
+                        _progress,
+                    )
 
-    # ------------------------------------ #
-    # Utility Methods                      #
-    # ------------------------------------ #
-    def set_logging_level(
-        self, level: Union[int, str], handlers: Optional[List[logging.Handler]] = None
-    ):
-        """
-        Update the logging level for the library logger and its handlers.
+                    # Construct the N-dim index from the gidx so that we can access
+                    # the parameter dictionary given our position in the workload.
+                    midx = np.unravel_index(gidx, self.shape)
+                    iteration_parameters = {
+                        paramkey: paramvalue[midx[param_idx]]
+                        for param_idx, (paramkey, paramvalue) in enumerate(
+                            self.__parameters__.items()
+                        )
+                    }
 
-        Parameters
-        ----------
-        level : int or str
-            Desired logging level (e.g., logging.DEBUG or "DEBUG").
-        handlers : list[logging.Handler], optional
-            List of specific handlers to update. If None, all attached handlers are updated.
-        """
-        import logging
+                    # Generate the configurations for this parameter set. These
+                    # are going to be used during the fitting procedure.
+                    mod_config = self.generate_modified_configuration(
+                        gidx, **iteration_parameters
+                    )
+                    unmod_config = self.generate_unmodified_configuration(
+                        gidx, **iteration_parameters
+                    )
+                    self.logger.debug(
+                        "[Param %5d] (%4d / %4d) |   Generated mod and unmod configs.",
+                        gidx,
+                        lidx + 1,
+                        _num_params,
+                    )
 
-        # Convert string levels to integer values
-        if isinstance(level, str):
-            level_upper = level.upper()
-            level = getattr(logging, level_upper, None)
-            if not isinstance(level, int):
-                raise ValueError(f"Invalid logging level: {level_upper}")
+                    # @@ Enter Temperature Loop @@ #
+                    # Now for each of the library parameter values, we iterate over all
+                    # of the temperatures in order to sample the parameter space.
+                    for tid, T in enumerate(temperatures):
+                        # Log some loop start information.
+                        _temperature_start_time = time.perf_counter()
+                        self.logger.debug(
+                            "[Param %5d: Temp %5d] (%4d / %4d) | Progress: %6.2f%%",
+                            gidx,
+                            tid,
+                            _simulations_completed,
+                            _num_simulations_rank,
+                            _progress,
+                        )
 
-        # Update the config for persistence
-        self.config["logging.level"] = logging.getLevelName(level)
+                        # Build the synthetic data for this
+                        # run by generating the modified model and then
+                        # generating synthetic data.
+                        _ = self.generate_model_modified(T, **iteration_parameters)
+                        synth_path = self._build_synthetic_data(
+                            gidx, tid, T, mod_config, **iteration_parameters
+                        )
+                        xspec.AllData.clear()
+                        xspec.AllModels.clear()
 
-        # Update logger level
-        self.logger.setLevel(level)
+                        self.logger.debug(
+                            "[Param %5d: Temp %5d] (%4d / %4d) |   Built synthetic data.",
+                            gidx,
+                            tid,
+                            _simulations_completed,
+                            _num_simulations_rank,
+                        )
 
-        # Select handlers
-        target_handlers = handlers if handlers is not None else self.logger.handlers
+                        # Perform the fit to the modified case and then
+                        # to the unmodified case.
+                        _ = self.generate_model_unmodified(T, **iteration_parameters)
+                        _ = xspec.Spectrum(str(synth_path))
+                        result_mod = self.fit_modified(mod_config)
+                        self.logger.debug(
+                            "[Param %5d: Temp %5d] (%4d / %4d) |   Fit to modified config.",
+                            gidx,
+                            tid,
+                            _simulations_completed,
+                            _num_simulations_rank,
+                        )
 
-        # Update handler levels
-        for h in target_handlers:
-            h.setLevel(level)
+                        xspec.AllData.clear()
+                        xspec.AllModels.clear()
+                        _ = self.generate_model_unmodified(T, **iteration_parameters)
+                        _ = xspec.Spectrum(str(synth_path))
+                        result_unmod = self.fit_unmodified(unmod_config)
+                        self.logger.debug(
+                            "[Param %5d: Temp %5d] (%4d / %4d) |   Fit to unmodified config.",
+                            gidx,
+                            tid,
+                            _simulations_completed,
+                            _num_simulations_rank,
+                        )
 
-        self.logger.debug("Logger level set to %s.", logging.getLevelName(level))
+                        # Construct output and write it to the rank
+                        # level output.
+                        output = self._write_output(
+                            result_mod=result_mod,
+                            result_unmod=result_unmod,
+                            true_temperature=T,
+                            **iteration_parameters,
+                        )
+                        df["results"][lidx, tid, :] = output  # type: ignore[index]
+                        self.logger.debug(
+                            "[Param %5d: Temp %5d] (%4d / %4d) |   Wrote output.",
+                            gidx,
+                            tid,
+                            _simulations_completed,
+                            _num_simulations_rank,
+                        )
+
+                        # Clean up the teperature iteration. This requires
+                        # that we compute a few things before moving on to the
+                        # next one.
+                        self.cleanup_temperature_iteration(gidx, tid)
+                        self.logger.debug(
+                            "[Param %5d: Temp %5d] (%4d / %4d) |   Cleaned up temperature iteration.",
+                            gidx,
+                            tid,
+                            _simulations_completed,
+                            _num_simulations_rank,
+                        )
+
+                        _temperature_elapsed_time = (
+                            time.perf_counter() - _temperature_start_time
+                        )
+                        _simulations_completed += 1
+                        _progress = 100 * (
+                            _simulations_completed / _num_simulations_rank
+                        )
+                        self.logger.debug(
+                            "[Param %5d: Temp %5d] (%4d / %4d) | [DONE]: %6.2fs",
+                            gidx,
+                            tid,
+                            _simulations_completed,
+                            _num_simulations_rank,
+                            _temperature_elapsed_time,
+                        )
+
+                        clear_xspec()
+
+                        # ----------- END OF TEMP ITERATION ---------------- #
+
+                    # Clean up the parameter level loop before proceeding.
+                    self.cleanup_parameter_iteration(gidx)
+                    self.logger.debug(
+                        "[Param %5d] (%4d / %4d) |   Cleaned up parameter iteration.",
+                        gidx,
+                        lidx + 1,
+                        _num_params,
+                    )
+
+                    _parameter_elapsed_time = (
+                        time.perf_counter() - _parameter_start_time
+                    )
+                    self.logger.info(
+                        "[Param %5d] (%4d / %4d) | [DONE]: %6.2fs",
+                        gidx,
+                        lidx + 1,
+                        _num_params,
+                        _parameter_elapsed_time,
+                    )
+
+                    _is_complete = (lidx + 1) == _num_params
+                    status_local = (lidx + 1, _num_params, _is_complete)
+
+                    # Sync every NSYNC or at completion
+                    if ((lidx + 1) % self.config["prog.nsync"] == 0) or _is_complete:
+                        _ = sync_progress(
+                            _mpicomm, _mpirank, _prog_monitor, *status_local
+                        )
+
+            # We now exit except for the RANK-0 process, which will complete by
+            # combining the relevant data files and cleaning up the environment.
+            _mpicomm.Barrier()
+            if _mpirank == 0:
+                try:
+                    self._finalize_library(temperatures, _mpisize)
+                finally:
+                    if clear_cache:
+                        import shutil
+
+                        shutil.rmtree(self.__assets__["cache"])
+                        self.__assets__["cache"].mkdir(parents=True, exist_ok=True)
+
+        except Exception:
+            # SOMETHING FAILED. We proceed by logging to the core logger, the file logger,
+            # and printing the error message before killing everthing.
+            self.logger.critical(
+                "Fatal error on rank %d:\n%s", _mpirank, traceback.format_exc()
+            )
+            spec_logger.critical(
+                "Fatal error on rank %d:\n%s", _mpirank, traceback.format_exc()
+            )
+
+            # Abort all ranks immediately
+            _mpicomm.Abort(1)

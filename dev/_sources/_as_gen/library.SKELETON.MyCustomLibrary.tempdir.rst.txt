@@ -1,0 +1,6 @@
+library.SKELETON.MyCustomLibrary.tempdir
+========================================
+
+.. currentmodule:: library.SKELETON
+
+.. autoproperty:: MyCustomLibrary.tempdir

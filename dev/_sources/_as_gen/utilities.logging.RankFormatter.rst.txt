@@ -1,0 +1,39 @@
+RankFormatter
+===============================
+
+.. currentmodule:: utilities.logging
+
+.. autoclass:: utilities.logging.RankFormatter
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      ~RankFormatter.__init__
+      ~RankFormatter.converter
+      ~RankFormatter.format
+      ~RankFormatter.formatException
+      ~RankFormatter.formatMessage
+      ~RankFormatter.formatStack
+      ~RankFormatter.formatTime
+      ~RankFormatter.usesTime
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      ~RankFormatter.default_msec_format
+      ~RankFormatter.default_time_format
+   
+   

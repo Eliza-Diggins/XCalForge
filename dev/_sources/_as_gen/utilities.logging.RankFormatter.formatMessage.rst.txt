@@ -1,0 +1,6 @@
+utilities.logging.RankFormatter.formatMessage
+=============================================
+
+.. currentmodule:: utilities.logging
+
+.. automethod:: RankFormatter.formatMessage

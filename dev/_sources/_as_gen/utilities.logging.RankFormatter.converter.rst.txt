@@ -1,0 +1,6 @@
+utilities.logging.RankFormatter.converter
+=========================================
+
+.. currentmodule:: utilities.logging
+
+.. automethod:: RankFormatter.converter

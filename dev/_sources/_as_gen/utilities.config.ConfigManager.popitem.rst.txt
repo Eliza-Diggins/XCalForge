@@ -1,0 +1,6 @@
+utilities.config.ConfigManager.popitem
+======================================
+
+.. currentmodule:: utilities.config
+
+.. automethod:: ConfigManager.popitem

@@ -1,0 +1,6 @@
+utilities.logging.RankFormatter.usesTime
+========================================
+
+.. currentmodule:: utilities.logging
+
+.. automethod:: RankFormatter.usesTime

@@ -1,0 +1,6 @@
+utilities.config.ConfigManager.items
+====================================
+
+.. currentmodule:: utilities.config
+
+.. automethod:: ConfigManager.items

@@ -1,0 +1,33 @@
+spectra.specutils
+=================
+
+.. automodule:: spectra.specutils
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+
+   
+      group_min_counts
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   

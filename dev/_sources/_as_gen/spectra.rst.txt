@@ -1,0 +1,35 @@
+﻿spectra
+=======
+
+.. automodule:: spectra
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Modules
+
+   .. autosummary::
+      :toctree:
+      :template: module.rst
+      :recursive:
+
+   
+      genspec
+      specutils
+   
+   
+
+   
+   
+   
+
+   
+   
+   

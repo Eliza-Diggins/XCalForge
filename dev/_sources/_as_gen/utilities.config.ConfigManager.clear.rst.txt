@@ -1,0 +1,6 @@
+utilities.config.ConfigManager.clear
+====================================
+
+.. currentmodule:: utilities.config
+
+.. automethod:: ConfigManager.clear

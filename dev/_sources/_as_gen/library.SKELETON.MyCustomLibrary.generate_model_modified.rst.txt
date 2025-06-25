@@ -1,0 +1,6 @@
+library.SKELETON.MyCustomLibrary.generate\_model\_modified
+==========================================================
+
+.. currentmodule:: library.SKELETON
+
+.. automethod:: MyCustomLibrary.generate_model_modified

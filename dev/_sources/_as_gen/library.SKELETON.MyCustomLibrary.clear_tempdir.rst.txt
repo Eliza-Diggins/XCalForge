@@ -1,0 +1,6 @@
+library.SKELETON.MyCustomLibrary.clear\_tempdir
+===============================================
+
+.. currentmodule:: library.SKELETON
+
+.. automethod:: MyCustomLibrary.clear_tempdir

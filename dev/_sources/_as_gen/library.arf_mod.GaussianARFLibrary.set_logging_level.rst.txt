@@ -1,0 +1,6 @@
+library.arf\_mod.GaussianARFLibrary.set\_logging\_level
+=======================================================
+
+.. currentmodule:: library.arf_mod
+
+.. automethod:: GaussianARFLibrary.set_logging_level

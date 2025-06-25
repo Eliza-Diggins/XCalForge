@@ -1,6 +1,0 @@
-library.SKELETON.MyCustomLibrary.assign\_mpi\_load
-==================================================
-
-.. currentmodule:: library.SKELETON
-
-.. automethod:: MyCustomLibrary.assign_mpi_load

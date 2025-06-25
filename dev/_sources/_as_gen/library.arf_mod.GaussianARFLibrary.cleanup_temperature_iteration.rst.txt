@@ -1,6 +1,0 @@
-library.arf\_mod.GaussianARFLibrary.cleanup\_temperature\_iteration
-===================================================================
-
-.. currentmodule:: library.arf_mod
-
-.. automethod:: GaussianARFLibrary.cleanup_temperature_iteration

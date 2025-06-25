@@ -1,6 +1,0 @@
-library.utils.sync\_progress
-============================
-
-.. currentmodule:: library.utils
-
-.. autofunction:: sync_progress

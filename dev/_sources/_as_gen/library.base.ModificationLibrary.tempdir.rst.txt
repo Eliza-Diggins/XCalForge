@@ -1,6 +1,0 @@
-library.base.ModificationLibrary.tempdir
-========================================
-
-.. currentmodule:: library.base
-
-.. autoproperty:: ModificationLibrary.tempdir

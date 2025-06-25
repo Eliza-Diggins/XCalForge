@@ -1,6 +1,0 @@
-library.base.ModificationLibrary.create\_library
-================================================
-
-.. currentmodule:: library.base
-
-.. automethod:: ModificationLibrary.create_library

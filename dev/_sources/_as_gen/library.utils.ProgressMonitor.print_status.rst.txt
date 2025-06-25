@@ -1,6 +1,0 @@
-library.utils.ProgressMonitor.print\_status
-===========================================
-
-.. currentmodule:: library.utils
-
-.. automethod:: ProgressMonitor.print_status

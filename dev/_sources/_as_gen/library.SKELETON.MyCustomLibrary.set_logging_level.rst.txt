@@ -1,0 +1,6 @@
+library.SKELETON.MyCustomLibrary.set\_logging\_level
+====================================================
+
+.. currentmodule:: library.SKELETON
+
+.. automethod:: MyCustomLibrary.set_logging_level

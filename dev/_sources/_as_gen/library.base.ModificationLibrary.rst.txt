@@ -1,0 +1,51 @@
+ModificationLibrary
+================================
+
+.. currentmodule:: library.base
+
+.. autoclass:: library.base.ModificationLibrary
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      ~ModificationLibrary.__init__
+      ~ModificationLibrary.assign_mpi_load
+      ~ModificationLibrary.cleanup_parameter_iteration
+      ~ModificationLibrary.cleanup_temperature_iteration
+      ~ModificationLibrary.clear_tempdir
+      ~ModificationLibrary.create_library
+      ~ModificationLibrary.fit_modified
+      ~ModificationLibrary.fit_unmodified
+      ~ModificationLibrary.generate_library
+      ~ModificationLibrary.generate_model_modified
+      ~ModificationLibrary.generate_model_unmodified
+      ~ModificationLibrary.generate_modified_configuration
+      ~ModificationLibrary.generate_unmodified_configuration
+      ~ModificationLibrary.library
+      ~ModificationLibrary.set_logging_level
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      ~ModificationLibrary.config
+      ~ModificationLibrary.is_generated
+      ~ModificationLibrary.parameters
+      ~ModificationLibrary.shape
+      ~ModificationLibrary.size
+      ~ModificationLibrary.tempdir
+      ~ModificationLibrary.temperatures
+   
+   

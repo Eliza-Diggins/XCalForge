@@ -1,0 +1,51 @@
+MyCustomLibrary
+================================
+
+.. currentmodule:: library.SKELETON
+
+.. autoclass:: library.SKELETON.MyCustomLibrary
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      ~MyCustomLibrary.__init__
+      ~MyCustomLibrary.assign_mpi_load
+      ~MyCustomLibrary.cleanup_parameter_iteration
+      ~MyCustomLibrary.cleanup_temperature_iteration
+      ~MyCustomLibrary.clear_tempdir
+      ~MyCustomLibrary.create_library
+      ~MyCustomLibrary.fit_modified
+      ~MyCustomLibrary.fit_unmodified
+      ~MyCustomLibrary.generate_library
+      ~MyCustomLibrary.generate_model_modified
+      ~MyCustomLibrary.generate_model_unmodified
+      ~MyCustomLibrary.generate_modified_configuration
+      ~MyCustomLibrary.generate_unmodified_configuration
+      ~MyCustomLibrary.library
+      ~MyCustomLibrary.set_logging_level
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      ~MyCustomLibrary.config
+      ~MyCustomLibrary.is_generated
+      ~MyCustomLibrary.parameters
+      ~MyCustomLibrary.shape
+      ~MyCustomLibrary.size
+      ~MyCustomLibrary.tempdir
+      ~MyCustomLibrary.temperatures
+   
+   

@@ -1,6 +1,0 @@
-library.SKELETON.MyCustomLibrary.config
-=======================================
-
-.. currentmodule:: library.SKELETON
-
-.. autoproperty:: MyCustomLibrary.config

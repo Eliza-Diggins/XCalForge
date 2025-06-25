@@ -1,6 +1,0 @@
-library.base.ModificationLibrary.set\_logging\_level
-====================================================
-
-.. currentmodule:: library.base
-
-.. automethod:: ModificationLibrary.set_logging_level

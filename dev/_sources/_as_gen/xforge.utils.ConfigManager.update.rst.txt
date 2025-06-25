@@ -1,6 +1,0 @@
-xforge.utils.ConfigManager.update
-=================================
-
-.. currentmodule:: xforge.utils
-
-.. automethod:: ConfigManager.update

@@ -1,6 +1,0 @@
-xforge.utils.ConfigManager.to\_dict
-===================================
-
-.. currentmodule:: xforge.utils
-
-.. automethod:: ConfigManager.to_dict

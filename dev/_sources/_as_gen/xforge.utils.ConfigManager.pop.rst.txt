@@ -1,6 +1,0 @@
-xforge.utils.ConfigManager.pop
-==============================
-
-.. currentmodule:: xforge.utils
-
-.. automethod:: ConfigManager.pop

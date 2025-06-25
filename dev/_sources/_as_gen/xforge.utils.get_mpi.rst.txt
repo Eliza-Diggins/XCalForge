@@ -1,6 +1,0 @@
-xforge.utils.get\_mpi
-=====================
-
-.. currentmodule:: xforge.utils
-
-.. autofunction:: get_mpi

@@ -1,6 +1,0 @@
-xforge.utils.ConfigManager.clear
-================================
-
-.. currentmodule:: xforge.utils
-
-.. automethod:: ConfigManager.clear

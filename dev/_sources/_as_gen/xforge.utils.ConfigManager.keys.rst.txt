@@ -1,6 +1,0 @@
-xforge.utils.ConfigManager.keys
-===============================
-
-.. currentmodule:: xforge.utils
-
-.. automethod:: ConfigManager.keys

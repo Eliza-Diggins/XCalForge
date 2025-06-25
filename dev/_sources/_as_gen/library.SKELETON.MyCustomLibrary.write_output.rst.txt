@@ -1,6 +1,0 @@
-library.SKELETON.MyCustomLibrary.write\_output
-==============================================
-
-.. currentmodule:: library.SKELETON
-
-.. automethod:: MyCustomLibrary.write_output

@@ -1,0 +1,6 @@
+utilities.config.ConfigManager.get
+==================================
+
+.. currentmodule:: utilities.config
+
+.. automethod:: ConfigManager.get

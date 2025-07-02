@@ -1,0 +1,6 @@
+utilities.logging.RankFormatter.default\_time\_format
+=====================================================
+
+.. currentmodule:: utilities.logging
+
+.. autoattribute:: RankFormatter.default_time_format

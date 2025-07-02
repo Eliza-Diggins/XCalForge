@@ -1,0 +1,33 @@
+spectra.genspec
+===============
+
+.. automodule:: spectra.genspec
+
+   
+   
+   
+
+   
+   
+   .. rubric:: Functions
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+
+   
+      generate_synthetic_spectrum
+   
+   
+
+   
+   
+   
+
+   
+   
+   
+
+   
+   
+   

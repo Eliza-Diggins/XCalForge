@@ -1,0 +1,25 @@
+ProgressMonitor
+=============================
+
+.. currentmodule:: library.utils
+
+.. autoclass:: library.utils.ProgressMonitor
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+      :recursive:
+   
+      ~ProgressMonitor.__init__
+      ~ProgressMonitor.print_status
+      ~ProgressMonitor.update
+   
+   
+
+   
+   
+   

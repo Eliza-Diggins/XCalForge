@@ -1,0 +1,6 @@
+library.arf\_mod.GaussianARFLibrary.parameters
+==============================================
+
+.. currentmodule:: library.arf_mod
+
+.. autoproperty:: GaussianARFLibrary.parameters

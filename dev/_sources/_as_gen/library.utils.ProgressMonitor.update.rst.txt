@@ -1,0 +1,6 @@
+library.utils.ProgressMonitor.update
+====================================
+
+.. currentmodule:: library.utils
+
+.. automethod:: ProgressMonitor.update

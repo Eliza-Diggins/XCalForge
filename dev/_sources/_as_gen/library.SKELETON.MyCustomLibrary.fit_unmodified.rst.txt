@@ -1,0 +1,6 @@
+library.SKELETON.MyCustomLibrary.fit\_unmodified
+================================================
+
+.. currentmodule:: library.SKELETON
+
+.. automethod:: MyCustomLibrary.fit_unmodified

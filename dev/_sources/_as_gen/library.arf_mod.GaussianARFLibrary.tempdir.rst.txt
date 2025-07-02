@@ -1,0 +1,6 @@
+library.arf\_mod.GaussianARFLibrary.tempdir
+===========================================
+
+.. currentmodule:: library.arf_mod
+
+.. autoproperty:: GaussianARFLibrary.tempdir

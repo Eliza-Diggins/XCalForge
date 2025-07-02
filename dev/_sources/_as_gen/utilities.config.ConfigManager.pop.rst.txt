@@ -1,0 +1,6 @@
+utilities.config.ConfigManager.pop
+==================================
+
+.. currentmodule:: utilities.config
+
+.. automethod:: ConfigManager.pop

@@ -1,0 +1,618 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>XCalForge | System Overview &#8212; XCalForge  documentation</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+    <link rel="stylesheet" type="text/css" href="../_static/plot_directive.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery.css?v=d2d258e8" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-binder.css?v=f4aeca0c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-dataframe.css?v=2082cf3c" />
+    <link rel="stylesheet" type="text/css" href="../_static/sg_gallery-rendered-html.css?v=1277b6f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=5929fcd5"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'reference/overview';</script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Library Generation User Guide" href="library/overview.html" />
+    <link rel="prev" title="XCalForge | Reference Manual" href="index.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">XCalForge  documentation</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    XCalForge | Reference Manual
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../auto_examples/index.html">
+    XCalForge Example Gallery
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../api.html">
+    API Reference
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    XCalForge | Reference Manual
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../auto_examples/index.html">
+    XCalForge Example Gallery
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">XCalForge | System Overview</a></li>
+</ul>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Library Generation</span></p>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="library/overview.html">Library Generation User Guide</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="index.html" class="nav-link">XCalForge | Reference Manual</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">XCalForge | System Overview</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="xcalforge-system-overview">
+<span id="overview"></span><h1>XCalForge | System Overview<a class="headerlink" href="#xcalforge-system-overview" title="Link to this heading">#</a></h1>
+<p><strong>XCalForge</strong> is an integrated framework for instrument cross-calibration,
+designed to quantify and model systematic discrepancies in high-energy astrophysical observations.
+The library is designed to answer the following generic question:</p>
+<blockquote>
+<div><p>Given two telescopes (Telescope A and Telescope B), and assuming that Telescope A represents
+the “ground truth,” what modifications to the calibration, modeling, or fitting could correct
+the discrepancies between the findings of the two telescopes.</p>
+</div></blockquote>
+<section id="impetus">
+<h2>Impetus<a class="headerlink" href="#impetus" title="Link to this heading">#</a></h2>
+<p>Persistent discrepancies in X-ray temperature measurements across observatories such as
+<strong>Chandra</strong>, <strong>XMM-Newton</strong>, <strong>NuSTAR</strong>, and now <strong>XRISM</strong>, have motivated extensive
+cross-calibration efforts within the astrophysical community. Numerous studies have
+demonstrated that fitted plasma temperatures, particularly for hot galaxy clusters, vary systematically between instruments.
+For example, broad analyses by the IACHEC consortium and others have shown that <strong>XMM-Newton’s</strong> EPIC detectors
+often yield temperatures up to 20–30% lower than those derived from <strong>Chandra’s</strong> ACIS at high temperatures <span id="id1">[<a class="reference internal" href="#id6" title="G. Schellenberger, T.H. Reiprich, L. Lovisari, J. Nevalainen, and L. David. Xmm-newton and chandra cross-calibration using hiflugcs galaxy clusters: systematic temperature differences and cosmological impact. Astronomy &amp; Astrophysics, 575:A30, March 2015. URL: https://ui.adsabs.harvard.edu/abs/2015A&amp;A...575A..30S, arXiv:1404.7130, doi:10.1051/0004-6361/201424085.">SRL+15</a>]</span>.</p>
+<p>Similar temperature discrepancies, on the order of 10–15%, have been observed between <strong>Chandra</strong>
+and <strong>NuSTAR</strong> in cluster observations <span id="id2">[<a class="reference internal" href="#id9" title="Cicely Potter, Ayşegül Tümer, Qian H. S. Wang, Daniel R. Wik, Ben J. Maughan, and Gerrit Schellenberger. The Hydrostatic Mass of A478: Discrepant Results from Chandra, NuSTAR, and XMM-Newton. \apj , 958(2):112, December 2023. arXiv:2309.11743, doi:10.3847/1538-4357/acfb7d.">PotterTumerWang+23</a>, <a class="reference internal" href="#id8" title="Cicely Potter, Daniel Wik, Aysegul Tumer, and Qian H. S. Wang. Galaxy Cluster Temperature Discrepancies Between Chandra, NuSTAR, and XRISM's Xtend. In American Astronomical Society Meeting Abstracts, volume 245 of American Astronomical Society Meeting Abstracts, 412.06D. January 2025.">PotterWikTumerWang25</a>, <a class="reference internal" href="#id7" title="A. N. Wallbank, B. J. Maughan, F. Gastaldello, C. Potter, and D. R. Wik. A systematic comparison of galaxy cluster temperatures measured with NuSTAR and Chandra. \mnras , 517(4):5594-5609, December 2022. arXiv:2211.00672, doi:10.1093/mnras/stac3055.">WallbankMaughanGastaldello+22</a>]</span>.
+These differences propagate into critical quantities such as cluster mass estimates, introducing significant systematic
+uncertainty into cosmological constraints derived from X-ray data.</p>
+<p>The root causes of these discrepancies are linked to uncertainties in instrument
+effective area calibrations, especially at low energies (&lt;2 keV), as well as
+differences in detector response and potential modeling systematics
+<span id="id3">[<a class="reference internal" href="#id7" title="A. N. Wallbank, B. J. Maughan, F. Gastaldello, C. Potter, and D. R. Wik. A systematic comparison of galaxy cluster temperatures measured with NuSTAR and Chandra. \mnras , 517(4):5594-5609, December 2022. arXiv:2211.00672, doi:10.1093/mnras/stac3055.">WallbankMaughanGastaldello+22</a>]</span>. Recent studies
+using <strong>XRISM’s</strong> Resolve and Xtend instruments show promising internal consistency,
+but preliminary results suggest that soft-band calibration challenges
+persist. As highlighted by IACHEC, correcting these inter-mission
+biases is essential to ensure reliable, reproducible measurements of key astrophysical
+parameters across observatories <span id="id4">[<a class="reference internal" href="#id10" title="C. E. Grant, K. K. Madsen, V. Burwitz, K. Forster, M. Guainazzi, V. L. Kashyap, H. L. Marshall, C. B. Markwardt, E. D. Miller, L. Natalucci, P. P. Plucinsky, M. Shidatsu, and Y. Terada. International Astrophysical Consortium for High-energy Calibration: Summary of the 16th IACHEC Workshop. arXiv e-prints, pages arXiv:2501.17199, January 2025. arXiv:2501.17199, doi:10.48550/arXiv.2501.17199.">GrantMadsenBurwitz+25</a>]</span>. <strong>XCalForge</strong> provides a unified framework
+to simulate, emulate, and quantify these systematic effects, enabling the community to better
+understand, model, and mitigate cross-calibration temperature offsets.</p>
+</section>
+<section id="methodology">
+<h2>📊 Methodology<a class="headerlink" href="#methodology" title="Link to this heading">#</a></h2>
+<p>XCalForge is a modular framework designed to quantify and mitigate calibration-induced
+systematics in X-ray data. It combines synthetic simulations, machine learning emulators,
+and statistical inference to efficiently explore complex calibration parameter spaces.
+The workflow consists of three integrated stages:</p>
+<ol class="arabic simple">
+<li><p><strong>Library Generation</strong>: Systematic, high-performance generation of synthetic calibration libraries across configurable parameter grids.</p></li>
+<li><p><strong>Emulation</strong>: Development of machine learning models that emulate calibration effects and enable rapid predictions across parameter space.</p></li>
+<li><p><strong>Inference &amp; Bias Quantification</strong>: Application of statistical tools to infer optimal
+calibration adjustments and quantify systematic biases in observations.</p></li>
+</ol>
+<p>Together, these steps provide a scalable, data-driven pathway to understand and control
+calibration uncertainties.</p>
+<section id="library-generation">
+<h3>Library Generation<a class="headerlink" href="#library-generation" title="Link to this heading">#</a></h3>
+<p>The first stage of the <strong>XCalForge</strong> workflow is the generation of synthetic calibration libraries.
+This process builds structured datasets that map controlled, parameterized calibration modifications
+to their measurable effects on temperature recovery in X-ray observations. These libraries form the
+foundation for machine learning emulator training and downstream statistical inference.</p>
+<p><strong>Formalism</strong></p>
+<p>For a given telescope calibration state <span class="math notranslate nohighlight">\(\Theta\)</span> and an observed dataset <span class="math notranslate nohighlight">\(\mathcal{D}\)</span>,
+spectral fitting recovers physical parameters (e.g., plasma temperature) by maximizing the likelihood:</p>
+<div class="math notranslate nohighlight">
+\[\mathcal{L}(\mathcal{D} \mid T, \Theta)\]</div>
+<p>If the calibration <span class="math notranslate nohighlight">\(\Theta\)</span> is imperfect—due to uncertainties in effective area,
+response matrices, etc., the recovered parameter <span class="math notranslate nohighlight">\(T_{\mathrm{fit}}\)</span> may differ
+systematically from the true astrophysical value. The central goal of library generation
+is to quantify how <em>modifications</em> to the assumed calibration affect this relationship.
+A parametric family of calibration modifications <span class="math notranslate nohighlight">\(\phi_{\theta}\)</span> is introduced, where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(\theta\)</span> are user-defined parameters describing the modification (e.g., Gaussian ARF distortions).</p></li>
+<li><p>Applying <span class="math notranslate nohighlight">\(\phi_{\theta}\)</span> produces a modified calibration state:</p></li>
+</ul>
+<div class="math notranslate nohighlight">
+\[\Theta' = \phi_{\theta}(\Theta)\]</div>
+<p>Synthetic spectra are generated using the modified calibration <span class="math notranslate nohighlight">\(\Theta'\)</span>, simulating observations
+that reflect potential calibration biases. The simulated data <span class="math notranslate nohighlight">\(\mathcal{D}_{\theta}\)</span> is analyzed
+using both:</p>
+<ul class="simple">
+<li><p>The <em>unmodified</em> calibration <span class="math notranslate nohighlight">\(\Theta\)</span>, mimicking real-world analyses with imperfect knowledge.</p></li>
+<li><p>The <em>modified</em> calibration <span class="math notranslate nohighlight">\(\Theta'\)</span>, serving as a ground-truth consistency check.</p></li>
+</ul>
+<p>This enables measurement of the discrepancy:</p>
+<div class="math notranslate nohighlight">
+\[\Delta T(\theta, T_{\mathrm{true}}) = T_{\mathrm{fit}}(\Theta) - T_{\mathrm{true}}\]</div>
+<p>capturing how the assumed calibration leads to parameter biases as a function of
+modification parameters <span class="math notranslate nohighlight">\(\theta\)</span> and true temperatures <span class="math notranslate nohighlight">\(T_{\mathrm{true}}\)</span>.</p>
+<p><strong>Parameter Space and Mapping</strong>:</p>
+<p>To explore these effects, the modification parameters are discretized into a grid:</p>
+<div class="math notranslate nohighlight">
+\[\mathcal{G} = \mathcal{A}_1 \times \mathcal{A}_2 \times \ldots \times \mathcal{A}_d\]</div>
+<p>and a set of true source temperatures <span class="math notranslate nohighlight">\(\mathcal{T} = \{ T_1, T_2, \ldots, T_{N_T} \}\)</span> is defined.</p>
+<p>The library thus establishes a dense, precomputed mapping:</p>
+<div class="math notranslate nohighlight">
+\[(\theta, T_{\mathrm{true}}) \longrightarrow \Delta T(\theta, T_{\mathrm{true}})\]</div>
+<p>This dataset enables training fast, differentiable emulators to interpolate this mapping across parameter space,
+avoiding costly on-the-fly simulations during inference.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The success of this approach depends critically on selecting a meaningful, physically motivated parameterization <span class="math notranslate nohighlight">\(\theta\)</span>
+of calibration modifications. Typical examples include:</p>
+<ul class="simple">
+<li><p>Gaussian distortions to the ARF effective area</p></li>
+<li><p>Energy-dependent scaling of response matrices</p></li>
+<li><p>User-defined perturbations based on known instrument systematics</p></li>
+</ul>
+</div>
+<p><strong>XCalForge</strong> provides flexible tools to define and test such modification families within the library generation framework.</p>
+<p>For further theoretical background, see <a class="reference internal" href="library/theory.html#library-gen-theory"><span class="std std-ref">Library Generation</span></a>.
+For detailed implementation guidance, refer to <a class="reference internal" href="library/overview.html#library-gen-user"><span class="std std-ref">Library Generation User Guide</span></a>.</p>
+</section>
+<section id="emulation">
+<h3>Emulation<a class="headerlink" href="#emulation" title="Link to this heading">#</a></h3>
+<p>Leverage machine learning to build surrogate models that approximate calibration effects:</p>
+<ul class="simple">
+<li><p>Train neural emulators using generated spectral libraries</p></li>
+<li><p>Enable rapid interpolation within parameter spaces</p></li>
+<li><p>Reduce computational cost for inference and bias estimation</p></li>
+</ul>
+<p>These emulators accelerate large-scale statistical studies and observational analyses.</p>
+</section>
+<section id="inference-bias-quantification">
+<h3>Inference &amp; Bias Quantification<a class="headerlink" href="#inference-bias-quantification" title="Link to this heading">#</a></h3>
+<p>Apply statistical inference pipelines to model and quantify calibration-induced systematics:</p>
+<ul class="simple">
+<li><p>Perform temperature bias studies across instruments</p></li>
+<li><p>Fit observational datasets using emulator-enhanced models</p></li>
+<li><p>Quantify systematic offsets with robust uncertainty estimates</p></li>
+</ul>
+<p>—</p>
+<div class="docutils container" id="id5">
+<div role="list" class="citation-list">
+<div class="citation" id="id6" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">SRL+15</a><span class="fn-bracket">]</span></span>
+<p>G. Schellenberger, T.H. Reiprich, L. Lovisari, J. Nevalainen, and L. David. Xmm-newton and chandra cross-calibration using hiflugcs galaxy clusters: systematic temperature differences and cosmological impact. <em>Astronomy &amp; Astrophysics</em>, 575:A30, March 2015. URL: <a class="reference external" href="https://ui.adsabs.harvard.edu/abs/2015A&amp;A...575A..30S">https://ui.adsabs.harvard.edu/abs/2015A&amp;A...575A..30S</a>, <a class="reference external" href="https://arxiv.org/abs/1404.7130">arXiv:1404.7130</a>, <a class="reference external" href="https://doi.org/10.1051/0004-6361/201424085">doi:10.1051/0004-6361/201424085</a>.</p>
+</div>
+<div class="citation" id="id10" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">GrantMadsenBurwitz+25</a><span class="fn-bracket">]</span></span>
+<p>C. E. Grant, K. K. Madsen, V. Burwitz, K. Forster, M. Guainazzi, V. L. Kashyap, H. L. Marshall, C. B. Markwardt, E. D. Miller, L. Natalucci, P. P. Plucinsky, M. Shidatsu, and Y. Terada. International Astrophysical Consortium for High-energy Calibration: Summary of the 16th IACHEC Workshop. <em>arXiv e-prints</em>, pages arXiv:2501.17199, January 2025. <a class="reference external" href="https://arxiv.org/abs/2501.17199">arXiv:2501.17199</a>, <a class="reference external" href="https://doi.org/10.48550/arXiv.2501.17199">doi:10.48550/arXiv.2501.17199</a>.</p>
+</div>
+<div class="citation" id="id9" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">PotterTumerWang+23</a><span class="fn-bracket">]</span></span>
+<p>Cicely Potter, Ayşegül Tümer, Qian H. S. Wang, Daniel R. Wik, Ben J. Maughan, and Gerrit Schellenberger. The Hydrostatic Mass of A478: Discrepant Results from Chandra, NuSTAR, and XMM-Newton. <em>\apj </em>, 958(2):112, December 2023. <a class="reference external" href="https://arxiv.org/abs/2309.11743">arXiv:2309.11743</a>, <a class="reference external" href="https://doi.org/10.3847/1538-4357/acfb7d">doi:10.3847/1538-4357/acfb7d</a>.</p>
+</div>
+<div class="citation" id="id8" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">PotterWikTumerWang25</a><span class="fn-bracket">]</span></span>
+<p>Cicely Potter, Daniel Wik, Aysegul Tumer, and Qian H. S. Wang. Galaxy Cluster Temperature Discrepancies Between Chandra, NuSTAR, and XRISM's Xtend. In <em>American Astronomical Society Meeting Abstracts</em>, volume 245 of American Astronomical Society Meeting Abstracts, 412.06D. January 2025.</p>
+</div>
+<div class="citation" id="id7" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>WallbankMaughanGastaldello+22<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id2">1</a>,<a role="doc-backlink" href="#id3">2</a>)</span>
+<p>A. N. Wallbank, B. J. Maughan, F. Gastaldello, C. Potter, and D. R. Wik. A systematic comparison of galaxy cluster temperatures measured with NuSTAR and Chandra. <em>\mnras </em>, 517(4):5594–5609, December 2022. <a class="reference external" href="https://arxiv.org/abs/2211.00672">arXiv:2211.00672</a>, <a class="reference external" href="https://doi.org/10.1093/mnras/stac3055">doi:10.1093/mnras/stac3055</a>.</p>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="index.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">XCalForge | Reference Manual</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="library/overview.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">Library Generation User Guide</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#impetus">Impetus</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#methodology">📊 Methodology</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#library-generation">Library Generation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#emulation">Emulation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#inference-bias-quantification">Inference &amp; Bias Quantification</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/reference/overview.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2024, Eliza Diggins.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,6 @@
+library.utils.ProgressMonitor.\_\_init\_\_
+==========================================
+
+.. currentmodule:: library.utils
+
+.. automethod:: ProgressMonitor.__init__

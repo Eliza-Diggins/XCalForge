@@ -1,0 +1,6 @@
+library.arf\_mod.GaussianARFLibrary.cleanup\_parameter\_iteration
+=================================================================
+
+.. currentmodule:: library.arf_mod
+
+.. automethod:: GaussianARFLibrary.cleanup_parameter_iteration

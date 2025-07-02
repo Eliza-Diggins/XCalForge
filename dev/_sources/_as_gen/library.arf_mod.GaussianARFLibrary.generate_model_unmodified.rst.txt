@@ -1,0 +1,6 @@
+library.arf\_mod.GaussianARFLibrary.generate\_model\_unmodified
+===============================================================
+
+.. currentmodule:: library.arf_mod
+
+.. automethod:: GaussianARFLibrary.generate_model_unmodified

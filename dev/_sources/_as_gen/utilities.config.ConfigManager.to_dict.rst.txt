@@ -1,0 +1,6 @@
+utilities.config.ConfigManager.to\_dict
+=======================================
+
+.. currentmodule:: utilities.config
+
+.. automethod:: ConfigManager.to_dict

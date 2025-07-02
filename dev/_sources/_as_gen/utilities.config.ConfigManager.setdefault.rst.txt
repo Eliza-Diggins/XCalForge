@@ -1,0 +1,6 @@
+utilities.config.ConfigManager.setdefault
+=========================================
+
+.. currentmodule:: utilities.config
+
+.. automethod:: ConfigManager.setdefault

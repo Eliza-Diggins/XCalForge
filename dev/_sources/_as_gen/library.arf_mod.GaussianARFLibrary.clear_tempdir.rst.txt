@@ -1,0 +1,6 @@
+library.arf\_mod.GaussianARFLibrary.clear\_tempdir
+==================================================
+
+.. currentmodule:: library.arf_mod
+
+.. automethod:: GaussianARFLibrary.clear_tempdir

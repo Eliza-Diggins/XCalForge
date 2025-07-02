@@ -1,0 +1,6 @@
+library.arf\_mod.GaussianARFLibrary.fit\_modified
+=================================================
+
+.. currentmodule:: library.arf_mod
+
+.. automethod:: GaussianARFLibrary.fit_modified

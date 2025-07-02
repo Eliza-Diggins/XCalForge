@@ -1,0 +1,6 @@
+utilities.logging.RankFormatter.default\_msec\_format
+=====================================================
+
+.. currentmodule:: utilities.logging
+
+.. autoattribute:: RankFormatter.default_msec_format

@@ -1,0 +1,6 @@
+utilities.config.ConfigManager.update
+=====================================
+
+.. currentmodule:: utilities.config
+
+.. automethod:: ConfigManager.update

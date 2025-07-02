@@ -180,7 +180,8 @@ cmap = plt.cm.viridis
 # Extract the temperatures that we are going
 # to plot.
 T_unmod = temperatures
-T_mod = library[0, :, 0, :, :]
+print(library.shape)
+T_mod = library[1, :, 0, :, :]
 
 vmin, vmax = np.amin(T_unmod), np.amax(T_unmod)
 norm = plt.Normalize(vmin=vmin, vmax=vmax)

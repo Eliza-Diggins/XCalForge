@@ -1,6 +1,0 @@
-utilities.logging.RankFormatter.formatException
-===============================================
-
-.. currentmodule:: utilities.logging
-
-.. automethod:: RankFormatter.formatException

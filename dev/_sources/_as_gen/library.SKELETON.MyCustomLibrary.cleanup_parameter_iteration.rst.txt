@@ -1,6 +1,0 @@
-library.SKELETON.MyCustomLibrary.cleanup\_parameter\_iteration
-==============================================================
-
-.. currentmodule:: library.SKELETON
-
-.. automethod:: MyCustomLibrary.cleanup_parameter_iteration

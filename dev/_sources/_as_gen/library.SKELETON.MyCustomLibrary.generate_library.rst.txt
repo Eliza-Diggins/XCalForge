@@ -1,6 +1,0 @@
-library.SKELETON.MyCustomLibrary.generate\_library
-==================================================
-
-.. currentmodule:: library.SKELETON
-
-.. automethod:: MyCustomLibrary.generate_library

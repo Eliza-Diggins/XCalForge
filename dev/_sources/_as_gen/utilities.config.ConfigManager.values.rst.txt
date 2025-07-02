@@ -1,6 +1,0 @@
-utilities.config.ConfigManager.values
-=====================================
-
-.. currentmodule:: utilities.config
-
-.. automethod:: ConfigManager.values

@@ -1,6 +1,0 @@
-utilities.logging.RankFormatter.\_\_init\_\_
-============================================
-
-.. currentmodule:: utilities.logging
-
-.. automethod:: RankFormatter.__init__

@@ -1,6 +1,0 @@
-library.base.ModificationLibrary.clear\_tempdir
-===============================================
-
-.. currentmodule:: library.base
-
-.. automethod:: ModificationLibrary.clear_tempdir

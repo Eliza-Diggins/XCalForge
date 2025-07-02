@@ -1,6 +1,0 @@
-spectra.genspec.generate\_synthetic\_spectrum
-=============================================
-
-.. currentmodule:: spectra.genspec
-
-.. autofunction:: generate_synthetic_spectrum

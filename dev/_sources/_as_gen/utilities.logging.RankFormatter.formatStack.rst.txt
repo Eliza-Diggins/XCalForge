@@ -1,6 +1,0 @@
-utilities.logging.RankFormatter.formatStack
-===========================================
-
-.. currentmodule:: utilities.logging
-
-.. automethod:: RankFormatter.formatStack

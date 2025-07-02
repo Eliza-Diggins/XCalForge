@@ -1,6 +1,0 @@
-library.base.ModificationLibrary.cleanup\_temperature\_iteration
-================================================================
-
-.. currentmodule:: library.base
-
-.. automethod:: ModificationLibrary.cleanup_temperature_iteration

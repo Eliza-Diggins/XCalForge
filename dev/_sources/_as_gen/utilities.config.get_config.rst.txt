@@ -1,6 +1,0 @@
-utilities.config.get\_config
-============================
-
-.. currentmodule:: utilities.config
-
-.. autofunction:: get_config

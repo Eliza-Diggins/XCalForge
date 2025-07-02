@@ -1,6 +1,0 @@
-library.base.ModificationLibrary.generate\_unmodified\_configuration
-====================================================================
-
-.. currentmodule:: library.base
-
-.. automethod:: ModificationLibrary.generate_unmodified_configuration

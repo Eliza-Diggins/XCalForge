@@ -1,6 +1,0 @@
-spectra.specutils.group\_min\_counts
-====================================
-
-.. currentmodule:: spectra.specutils
-
-.. autofunction:: group_min_counts
